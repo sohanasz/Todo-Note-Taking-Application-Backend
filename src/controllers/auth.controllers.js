@@ -39,13 +39,13 @@ const registerUser = async (req, res) => {
 
     // console.log("token 1st Phase CRYPTO - ", token);
     const randomBytesBuffer = crypto.randomBytes(32);
-    console.log("Step 1 - Random Bytes Buffer:", randomBytesBuffer);
+    // console.log("Step 1 - Random Bytes Buffer:", randomBytesBuffer);
 
     const nonHexToken = randomBytesBuffer.toString();
-    console.log("Step 2 - non Hex String Token:", nonHexToken);
+    // console.log("Step 2 - non Hex String Token:", nonHexToken);
 
     const token = randomBytesBuffer.toString("hex");
-    console.log("Step 3 - Hex Token:", token);
+    // console.log("Step 3 - Hex Token:", token);
 
     user.emailVerificationToken = token;
     console.log("eVT - ", user);
