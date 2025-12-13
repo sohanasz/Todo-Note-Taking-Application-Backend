@@ -1,6 +1,31 @@
-# Node modules
-node_modules/
+########################
+# Node.js backend
+########################
 
-# env 
-.env
-.prettierignore
+# Dependencies
+backend/node_modules/
+
+# Environment files (secrets)
+backend/.env
+backend/.env.local
+backend/.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Build output
+backend/dist/
+backend/build/
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Optional runtime files
+backend/tmp/
+backend/.cache/
