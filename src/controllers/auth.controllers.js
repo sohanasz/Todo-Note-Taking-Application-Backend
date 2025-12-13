@@ -29,13 +29,13 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const hashedPassword = bcrypt.hash(password, 12)
+    // const hashedPassword = bcrypt.hash(password, 12);
 
     const user = await User.create({
       username,
       role: role || "member",
       email,
-      password: hashedPassword,
+      password: password,
     });
     console.log("USER - ", user);
 
@@ -205,7 +205,7 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
 
   const verificationEmailContent = emailVerificationMailgenContent({
     username: user.username,
-    verificationUrl: `http://localhost:8000/api/v1/users/verify/${token}`,
+    verificationUrl: `${EMAIL_VERIFICATION_BASE_URL}${token}`,
   });
 
   await sendEmail({
@@ -236,7 +236,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
   user.passwordResetExpires = Date.now() + 3600000; // 1 hour
   await user.save();
 
-  const resetUrl = `http://localhost:8000/api/v1/users/reset-password/${resetToken}`;
+  const resetUrl = `${process.env.PASSWORD_RESET_BASE_URL}${resetToken}`;
   const emailContent = `Reset your password using the following link: ${resetUrl}`;
 
   await sendEmail({
