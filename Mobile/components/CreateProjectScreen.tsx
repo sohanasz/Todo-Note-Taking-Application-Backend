@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import useTheme from "@/hooks/useTheme";
 import { createCreateProjectStyles } from "@/assets/styles/CreateProjectScreen";
 import { api } from "@/lib/api";
@@ -20,6 +12,10 @@ const CreateProjectScreen = () => {
   const [description, setDescription] = useState("");
 
   const createProject = async () => {
+    if (!name.trim() || !description.trim()) {
+      Alert.alert("Appropriate title and description are required");
+    }
+
     try {
       const res = await api.post("/projects", {
         name: name,
@@ -30,7 +26,6 @@ const CreateProjectScreen = () => {
         Alert.alert("Success✅", "Project Created Successfully🎉");
     } catch (err) {
       console.error("Failed to create project", err);
-    } finally {
     }
   };
 

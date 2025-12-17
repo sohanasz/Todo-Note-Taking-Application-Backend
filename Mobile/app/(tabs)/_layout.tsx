@@ -1,19 +1,81 @@
 import { Tabs } from "expo-router";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import { ThemeProvider } from "@/hooks/useTheme";
-import SafeScreen from "@/components/SafeScreen";
+import { ProjectProvider } from "@/hooks/useProject";
+import useTheme from "@/hooks/useTheme";
 
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Tabs.Screen name="home" />
-        <Tabs.Screen name="settings" />
-      </Tabs>
+      <ProjectProvider>
+        <ThemedTabs />
+      </ProjectProvider>
     </ThemeProvider>
+  );
+}
+
+function ThemedTabs() {
+  const { colors } = useTheme();
+
+  return (
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      {/* Hidden from tab bar */}
+      <Tabs.Screen
+        name="select"
+        options={{
+          href: null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="notes"
+        options={{
+          title: "Notes",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="document-text-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="tasks"
+        options={{
+          title: "Tasks",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="checkmark-done-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }

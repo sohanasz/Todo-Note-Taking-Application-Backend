@@ -12,6 +12,8 @@ import SafeScreen from "@/components/SafeScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { api } from "@/lib/api";
 import CreateProjectScreen from "@/components/CreateProjectScreen";
+import useProject from "@/hooks/useProject";
+import { router } from "expo-router";
 
 type Project = {
   _id: string;
@@ -25,6 +27,7 @@ type Project = {
 
 export default function ProjectsListScreen() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const { project, setProject } = useProject();
   const [loading, setLoading] = useState(true);
   const [showCreateProject, setShowCreateProject] = useState(false);
 
@@ -48,7 +51,14 @@ export default function ProjectsListScreen() {
 
   const renderItem = ({ item }: { item: Project }) => {
     return (
-      <View style={styles.card}>
+      <TouchableOpacity
+        activeOpacity={0.88}
+        style={styles.card}
+        onPress={() => {
+          setProject(item);
+          router.push("/select");
+        }}
+      >
         <Text style={styles.projectName}>{item.name}</Text>
 
         <View style={styles.metaRow}>
@@ -60,7 +70,7 @@ export default function ProjectsListScreen() {
             {new Date(item.createdAt).toDateString()}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
