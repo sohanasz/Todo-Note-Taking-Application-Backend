@@ -1,7 +1,7 @@
 import { Tabs } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider } from "@/hooks/useTheme";
-import SafeScreen from "@/components/safe-screen";
+import SafeScreen from "@/components/SafeScreen";
 
 export default function RootLayout() {
   return (

@@ -8,9 +8,10 @@ import {
 } from "react-native";
 import useTheme from "@/hooks/useTheme";
 import { createHomeStyles } from "@/assets/styles/home";
-import SafeScreen from "@/components/safe-screen";
+import SafeScreen from "@/components/SafeScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { api } from "@/lib/api";
+import CreateProjectScreen from "@/components/CreateProjectScreen";
 
 type Project = {
   _id: string;
@@ -25,13 +26,14 @@ type Project = {
 export default function ProjectsListScreen() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCreateProject, setShowCreateProject] = useState(false);
 
   const { colors } = useTheme();
   const styles = createHomeStyles(colors);
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [showCreateProject]);
 
   const fetchProjects = async () => {
     try {
@@ -51,7 +53,7 @@ export default function ProjectsListScreen() {
 
         <View style={styles.metaRow}>
           <Text style={styles.metaText}>
-            Created by{" "}
+            Created by{": @"}
             <Text style={styles.bold}>{item.createdBy.username}</Text>
           </Text>
           <Text style={styles.metaText}>
@@ -64,7 +66,7 @@ export default function ProjectsListScreen() {
 
   if (loading) {
     return (
-      <SafeScreen>
+      <SafeScreen style={styles.container}>
         <View style={styles.center}>
           <ActivityIndicator size="large" />
         </View>
@@ -73,9 +75,13 @@ export default function ProjectsListScreen() {
   }
 
   return (
-    <SafeScreen>
-      <View style={styles.container}>
-        <Text style={styles.sectionTitle}>Projects</Text>
+    <SafeScreen style={styles.container}>
+      <Text style={styles.sectionTitle}>
+        {showCreateProject ? "Create Project" : "Projects"}
+      </Text>
+      {showCreateProject ? (
+        <CreateProjectScreen />
+      ) : (
         <FlatList
           data={projects}
           keyExtractor={(item) => item._id}
@@ -83,13 +89,27 @@ export default function ProjectsListScreen() {
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />
+      )}
 
-        {/* Floating Action Button */}
-        <TouchableOpacity style={styles.fab} activeOpacity={0.85}>
-          <Ionicons name="add" size={26} color="#fff" />
-          <Text style={styles.fabText}>Create Project</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Floating Action Button */}
+      <TouchableOpacity
+        style={styles.fab}
+        activeOpacity={0.85}
+        onPress={() => {
+          setShowCreateProject((state) => {
+            return !state;
+          });
+        }}
+      >
+        <Ionicons
+          name={showCreateProject ? "close" : "add"}
+          size={26}
+          color="#fff"
+        />
+        <Text style={styles.fabText}>
+          {showCreateProject ? "" : "Create Project"}
+        </Text>
+      </TouchableOpacity>
     </SafeScreen>
   );
 }

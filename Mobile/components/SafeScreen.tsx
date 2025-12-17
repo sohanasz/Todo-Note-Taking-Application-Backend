@@ -4,21 +4,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 type Props = PropsWithChildren<{
   edges?: ("top" | "bottom" | "left" | "right")[];
+  style: {};
 }>;
 
 export default function SafeScreen({
   children,
   edges = ["top", "bottom"],
+  style,
 }: Props) {
   return (
-    <SafeAreaView style={styles.container} edges={edges}>
+    <SafeAreaView style={style} edges={edges}>
       {children}
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Text, View } from "react-native";
-import SignInScreen from "../components/signin";
-import SignUpScreen from "../components/signup";
+import SignInScreen from "../components/SignIn";
+import SignUpScreen from "../components/SignUp";
 
 export default function Index() {
   const [signInScreen, setSignInScreen] = useState(false);
