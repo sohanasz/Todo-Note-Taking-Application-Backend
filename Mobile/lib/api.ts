@@ -2,7 +2,7 @@ import axios from "axios";
 import { getItemAsync, setItemAsync } from "expo-secure-store";
 
 export const api = axios.create({
-  baseURL: "http://10.252.236.22:8000/api/v1/users",
+  baseURL: "http://10.208.72.62:8000/api/v1/users",
   timeout: 10000,
 });
 

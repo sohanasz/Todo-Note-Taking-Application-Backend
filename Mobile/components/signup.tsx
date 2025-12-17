@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { register } from "../lib/auth";
 import { router } from "expo-router";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function SignUpScreen({ setSignInScreen }: any) {
   const [name, setName] = useState("");
@@ -35,7 +36,7 @@ export default function SignUpScreen({ setSignInScreen }: any) {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
 
       <TextInput
@@ -70,7 +71,7 @@ export default function SignUpScreen({ setSignInScreen }: any) {
       <Text style={styles.link} onPress={() => setSignInScreen(true)}>
         Already have an account? Sign In
       </Text>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }
 

@@ -49,7 +49,13 @@ const getProjects = asyncHandler(async (req, res) => {
 
   const projectMemberships = await ProjectMember.find({
     user: userId,
-  }).populate("project");
+  }).populate({
+    path: "project",
+    populate: {
+      path: "createdBy",
+      model: "User",
+    },
+  });
 
   const projects = projectMemberships.map((proMem) => proMem.project);
 
