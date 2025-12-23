@@ -111,6 +111,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
       process.env.JWT_SECRET,
       {
+        // expiresIn: 10,
         expiresIn: process.env.JWT_TIME,
       },
     );
@@ -139,7 +140,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
 // Get Current User
 const getCurrentUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).select("-password");
+  const user = req.user;
 
   if (!user) {
     throw new ApiError(404, "User not found");

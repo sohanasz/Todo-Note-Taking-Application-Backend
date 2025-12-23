@@ -6,32 +6,29 @@ import { ProjectNote } from "../models/note.models.js";
 import { Project } from "../models/project.models.js";
 
 const createNote = asyncHandler(async (req, res) => {
-  const { projectId } = req.params;
-  const { content } = req.body;
+  try {
+    const { projectId } = req.params;
+    const { title, content } = req.body;
 
-  const project = await Project.findById(
-    new mongoose.Types.ObjectId(`${projectId}`),
-  );
+    const project = await Project.findById(
+      new mongoose.Types.ObjectId(`${projectId}`),
+    );
 
-  if (!project) {
-    throw new ApiError(401, "No project found");
+    if (!project) {
+      throw new ApiError(401, "No project found");
+    }
+
+    const note = await ProjectNote.create({
+      project: new mongoose.Types.ObjectId(`${projectId}`),
+      title: title,
+      content: content,
+      createdBy: req.user._id,
+    });
+
+    return res.status(200).json(new ApiResponse(200, note, "Notes Created!"));
+  } catch (error) {
+    return res.status(500).json(new ApiResponse(500, "Error creating notes"));
   }
-
-  const note = await ProjectNote.create({
-    project: new mongoose.Types.ObjectId(`${projectId}`),
-    content: content,
-    createdBy: req.user._id,
-  });
-  console.log("note", note);
-
-  const populatedNote = await ProjectNote.findById(note._id).populate(
-    "createdBy",
-    "username fullname avatar",
-  );
-
-  console.log("Joins", populatedNote);
-
-  return res.status(200).json(new ApiResponse(200, note, "Notes Created!"));
 });
 
 const getNotes = asyncHandler(async (req, res) => {
@@ -47,6 +44,9 @@ const getNotes = asyncHandler(async (req, res) => {
 
   const notes = await ProjectNote.find({
     project: new mongoose.Types.ObjectId(projectId),
+  }).populate({
+    path: "createdBy",
+    select: "_id username",
   });
 
   return res.status(200).json(new ApiResponse(200, notes, "Fetched all notes"));

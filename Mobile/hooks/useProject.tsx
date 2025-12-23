@@ -7,17 +7,16 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type ProjectContextType = {
-  project: {};
-  setProject: () => Dispatch<SetStateAction<{}>>;
+  project: {} | null;
+  setProject: () => Dispatch<SetStateAction<boolean>>;
 };
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 export function ProjectProvider({ children }: { children: ReactNode }) {
-  const [project, setProject] = useState<{}>({});
+  const [project, setProject] = useState<{} | null>(null);
 
   useEffect(() => {}, []);
 

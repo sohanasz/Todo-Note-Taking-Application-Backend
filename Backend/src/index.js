@@ -23,10 +23,10 @@ app.get("/", (req, res) => {
   res.send("FIRST POINT OF PROJECT OVER THE PORT NO - " + PORT);
 });
 
-app.use("/api/v1/users", authRoutes);
-app.use("/api/v1/users", projectRoutes);
-app.use("/api/v1/users", noteRoutes);
-app.use("/api/v1/users", taskRoutes);
+app.use("/api/v1/", authRoutes);
+app.use("/api/v1/", projectRoutes);
+app.use("/api/v1/", noteRoutes);
+app.use("/api/v1/", taskRoutes);
 
 // app.listen(PORT, () => {
 //   console.log(`Yo the server is up and running over port: ${PORT}`);

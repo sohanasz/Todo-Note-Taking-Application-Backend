@@ -16,9 +16,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     // console.log("DECODED", decodedToken);
-    const user = await User.findById(decodedToken?.id).select(
-      "-password -refreshToken -emailVerificationToken -emailVerificationExpiry",
-    );
+    const user = await User.findById(decodedToken?.id).select("-password");
 
     if (!user) {
       throw new ApiError(401, "Invalid User");
@@ -27,7 +25,8 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    throw new ApiError(401, error?.message || "Invalid Access Token");
+    throw new ApiError(401, "Session Ended");
+    // throw new ApiError(401, error?.message || "Invalid Access Token");
   }
 });
 
