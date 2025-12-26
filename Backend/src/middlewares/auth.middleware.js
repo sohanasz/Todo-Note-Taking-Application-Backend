@@ -1,5 +1,6 @@
 import { asyncHandler } from "../utils/async-handler.js";
 import { ApiError } from "../utils/api-error.js";
+import { ApiResponse } from "../utils/api-response.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { User } from "../models/user.models.js";
@@ -25,7 +26,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    throw new ApiError(401, "Session Ended");
+    return res.status(401).json(new ApiResponse(401, {}, "Session Ended"));
     // throw new ApiError(401, error?.message || "Invalid Access Token");
   }
 });

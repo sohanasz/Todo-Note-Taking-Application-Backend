@@ -1,9 +1,9 @@
 import axios from "axios";
 import { router } from "expo-router";
 import { getItemAsync, setItemAsync, deleteItemAsync } from "expo-secure-store";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 
-const baseURL = "10.108.221.200:8000";
+const baseURL = "10.14.237.106:8000";
 
 export const api = axios.create({
   baseURL: `http://${baseURL}/api/v1`,
@@ -12,8 +12,12 @@ export const api = axios.create({
 
 export function initiateInterceptors({ setIsSignedInState }) {
   api.interceptors.request.use(async (config) => {
-    const token = await getItemAsync("token");
-
+    let token: string;
+    if (Platform.OS !== "web") {
+      token = await getItemAsync("token");
+    } else {
+      token = localStorage.getItem("token");
+    }
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,11 +31,12 @@ export function initiateInterceptors({ setIsSignedInState }) {
     async (error) => {
       try {
         if (
-          error.response.status === 401 &&
-          error.message === "Session Ended"
+          error.response.data.statusCode === 401 &&
+          error.response.data.message === "Session Ended"
         ) {
           Alert.alert("Session ended", "Login again for new session");
           await deleteItemAsync("token");
+
           setIsSignedInState(false);
           router.replace("/");
         } else {

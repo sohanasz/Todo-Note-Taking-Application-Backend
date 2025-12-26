@@ -1,5 +1,6 @@
 import app from "./app.js";
 import dotenv from "dotenv";
+import cors from "cors";
 import connectDB from "./db/index.js";
 import cookieParser from "cookie-parser";
 import express from "express";
@@ -11,7 +12,13 @@ import taskRoutes from "./routes/task.routes.js";
 dotenv.config({
   path: "./.env",
 });
-
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

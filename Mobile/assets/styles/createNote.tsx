@@ -36,6 +36,7 @@ export const createCreateNoteStyles = (colors: ColorScheme) =>
       borderRadius: 10,
       marginBottom: 12,
     },
+
     editor: {
       flex: 1,
       backgroundColor: colors.backgrounds.input,
@@ -44,6 +45,7 @@ export const createCreateNoteStyles = (colors: ColorScheme) =>
       borderRadius: 12,
       fontSize: 15,
     },
+
     saveBtn: {
       backgroundColor: colors.primary,
       paddingVertical: 14,
@@ -51,12 +53,129 @@ export const createCreateNoteStyles = (colors: ColorScheme) =>
       alignItems: "center",
       marginTop: 12,
     },
+
     saveText: {
       color: colors.surface,
       fontWeight: "600",
       fontSize: 16,
     },
+
     disabled: {
       opacity: 0.6,
     },
+
+    editorMenu: {
+      position: "absolute",
+      bottom: 20,
+
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 14,
+      padding: 12,
+      borderRadius: 16,
+
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.15,
+      shadowRadius: 12,
+      elevation: 8,
+    },
+
+    menuIconBtn: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
+    blockSelector: {
+      position: "relative",
+      alignSelf: "flex-start",
+    },
+
+    selectorTrigger: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: 10,
+      paddingHorizontal: 14,
+      borderRadius: 12,
+      alignSelf: "flex-start",
+    },
+
+    selectorText: {
+      fontSize: 14,
+      fontWeight: "600",
+    },
+
+    dropdownMenu: {
+      position: "absolute",
+      bottom: 52,
+      alignSelf: "flex-start",
+      minWidth: 160,
+      borderRadius: 12,
+      borderWidth: 1,
+      overflow: "hidden",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 10,
+    },
+
+    dropdownItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      paddingVertical: 12,
+      paddingHorizontal: 14,
+    },
+
+    dropdownItemText: {
+      fontSize: 14,
+      fontWeight: "500",
+    },
+    /* Wrapper to center the menu horizontally */
+    editorMenuWrapper: {
+      position: "absolute",
+      bottom: 20,
+      left: 0,
+      right: 0,
+      alignItems: "center",
+    },
+
+    /* Fullscreen overlay to catch outside taps */
+    dropdownOverlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 0,
+    },
+    menuDivider: {
+      width: 1,
+      height: 28,
+      backgroundColor: colors.border,
+      marginHorizontal: 4,
+    },
   });
+
+export function determineBlockStyle(blockType: string, colors: ColorScheme) {
+  const BlockTypeBasedInputStyles = StyleSheet.create({
+    heading: {
+      color: colors.text,
+      fontSize: 25,
+      marginTop: 10,
+      marginBottom: 10,
+      fontWeight: 700,
+    },
+    paragraph: {
+      color: colors.text,
+      fontSize: 15,
+      marginTop: 7,
+      marginBottom: 7,
+    },
+  });
+
+  return BlockTypeBasedInputStyles[blockType];
+}
