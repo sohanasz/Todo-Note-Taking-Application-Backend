@@ -20,3 +20,23 @@ export class Paragraph extends Block {
     super("paragraph", "Paragraph", {});
   }
 }
+export class BulletPoint {
+  constructor(id: number | null, text: string) {
+    this.id = id;
+    this.text = text;
+    this.textInputHeight = 25;
+  }
+}
+export class BulletList extends Block {
+  static preString = "•";
+  constructor() {
+    super("bulletList", "", {});
+
+    this.text = [{ id: 1, text: "Your text" }];
+    this.currentBulletPointId = null;
+  }
+  upgradeToNumeric() {
+    this.blockType = "numericList";
+    return this;
+  }
+}

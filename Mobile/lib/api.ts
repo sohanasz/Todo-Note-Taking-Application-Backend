@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { getItemAsync, setItemAsync, deleteItemAsync } from "expo-secure-store";
 import { Alert, Platform } from "react-native";
 
-const baseURL = "10.14.237.106:8000";
+const baseURL = "10.251.30.109:8000";
 
 export const api = axios.create({
   baseURL: `http://${baseURL}/api/v1`,
@@ -31,11 +31,15 @@ export function initiateInterceptors({ setIsSignedInState }) {
     async (error) => {
       try {
         if (
-          error.response.data.statusCode === 401 &&
-          error.response.data.message === "Session Ended"
+          error?.response?.data.statusCode === 401 &&
+          error?.response?.data.message === "Session Ended"
         ) {
           Alert.alert("Session ended", "Login again for new session");
-          await deleteItemAsync("token");
+          if (Platform.OS !== "web") {
+            await deleteItemAsync("token");
+          } else {
+            localStorage.removeItem("token");
+          }
 
           setIsSignedInState(false);
           router.replace("/");

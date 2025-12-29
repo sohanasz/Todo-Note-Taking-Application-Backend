@@ -134,7 +134,7 @@ export const createCreateNoteStyles = (colors: ColorScheme) =>
       fontSize: 14,
       fontWeight: "500",
     },
-    /* Wrapper to center the menu horizontally */
+
     editorMenuWrapper: {
       position: "absolute",
       bottom: 20,
@@ -143,7 +143,6 @@ export const createCreateNoteStyles = (colors: ColorScheme) =>
       alignItems: "center",
     },
 
-    /* Fullscreen overlay to catch outside taps */
     dropdownOverlay: {
       position: "absolute",
       top: 0,
@@ -172,8 +171,17 @@ export function determineBlockStyle(blockType: string, colors: ColorScheme) {
     paragraph: {
       color: colors.text,
       fontSize: 15,
-      marginTop: 7,
-      marginBottom: 7,
+      marginVertical: 10,
+    },
+    bulletList: {
+      color: colors.text,
+      fontSize: 15,
+      marginVertical: 5,
+    },
+    numericList: {
+      color: colors.text,
+      fontSize: 15,
+      marginVertical: 5,
     },
   });
 
