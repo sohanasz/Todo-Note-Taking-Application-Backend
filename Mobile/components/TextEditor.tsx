@@ -101,6 +101,7 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
           key={bulletPoint.id}
           style={{
             flexDirection: "row",
+            alignItems: "center",
           }}
           onPress={() => {
             item.currentBulletPointId = bulletPoint.id;
@@ -125,7 +126,6 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
                   borderWidth: 2,
                   borderRadius: 16,
                   overflow: "hidden",
-                  padding: 10,
                   flex: 1,
                 },
               ]}
@@ -302,7 +302,7 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
             }}
           />
         ) : (
-          <TextInput
+          <Text
             onPress={() => {
               setCurrentBlockToEdit(item);
               setCurrentInputText(item.text);
@@ -310,7 +310,7 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
             style={[determineBlockStyle(item.blockType, colors)]}
           >
             {item.text}
-          </TextInput>
+          </Text>
         )}
       </View>
     );
