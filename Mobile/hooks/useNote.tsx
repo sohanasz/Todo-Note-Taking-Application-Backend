@@ -16,7 +16,7 @@ type NoteContextType = {
 const NoteContext = createContext<NoteContextType | undefined>(undefined);
 
 export function NoteProvider({ children }: { children: ReactNode }) {
-  const [note, setNote] = useState<{} | null>(null);
+  const [note, setNote] = useState<[] | null>(null);
 
   return (
     <NoteContext.Provider value={{ note, setNote }}>

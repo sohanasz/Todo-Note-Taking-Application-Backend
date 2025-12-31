@@ -6,7 +6,9 @@ export const createCreateNoteStyles = (colors: ColorScheme) =>
     container: {
       flex: 1,
       backgroundColor: colors.bg,
-      padding: 16,
+      paddingLeft: 10,
+      paddingRight: 10,
+      paddingBottom: 125,
     },
     header: {
       flexDirection: "row",
@@ -70,7 +72,7 @@ export const createCreateNoteStyles = (colors: ColorScheme) =>
 
       flexDirection: "row",
       alignItems: "center",
-      gap: 14,
+      gap: 8,
       padding: 12,
       borderRadius: 16,
 
@@ -91,6 +93,7 @@ export const createCreateNoteStyles = (colors: ColorScheme) =>
     blockSelector: {
       position: "relative",
       alignSelf: "flex-start",
+      marginHorizontal: 0,
     },
 
     selectorTrigger: {
@@ -98,7 +101,7 @@ export const createCreateNoteStyles = (colors: ColorScheme) =>
       alignItems: "center",
       justifyContent: "space-between",
       paddingVertical: 10,
-      paddingHorizontal: 14,
+      paddingHorizontal: 8,
       borderRadius: 12,
       alignSelf: "flex-start",
     },
@@ -137,7 +140,7 @@ export const createCreateNoteStyles = (colors: ColorScheme) =>
 
     editorMenuWrapper: {
       position: "absolute",
-      bottom: 20,
+      bottom: 28,
       left: 0,
       right: 0,
       alignItems: "center",
@@ -155,7 +158,7 @@ export const createCreateNoteStyles = (colors: ColorScheme) =>
       width: 1,
       height: 28,
       backgroundColor: colors.border,
-      marginHorizontal: 4,
+      marginHorizontal: 1,
     },
   });
 

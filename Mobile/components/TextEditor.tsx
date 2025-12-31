@@ -7,12 +7,14 @@ import {
   TextInput,
   FlatList,
   Platform,
-  Button,
   Alert,
 } from "react-native";
+// import { useKeyboard } from "@react-native-community/hooks";
+
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
+
 import {
   createCreateNoteStyles,
   determineBlockStyle,
@@ -23,6 +25,9 @@ import {
   Heading,
   Paragraph,
 } from "@/lib/classes/Block";
+import { router } from "expo-router";
+
+// const { keyboardShown, keyboardHeight } = useKeyboard();
 
 const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
   const styles = createCreateNoteStyles(colors);
@@ -129,8 +134,47 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
               multiline={true}
               placeholder="Enter Something"
               onChangeText={(text) => {
-                bulletPoint.text = text;
-                setCurrentInputText(text);
+                if (!text.includes("\n")) {
+                  bulletPoint.text = text;
+                  setCurrentInputText(text);
+                  return;
+                }
+
+                if (text.includes("\n")) {
+                  if (
+                    bulletPoint.text === text.replace("\n", "") &&
+                    item.currentBulletPointId !== bulletPoint.id
+                  ) {
+                    return;
+                  }
+
+                  const parsingNextLineText = text.replace("\n", "");
+
+                  bulletPoint.text = parsingNextLineText;
+                  let currentArray = item.text;
+                  const newArray = [];
+                  const bulletPointToInsert = new BulletPoint(null, "");
+                  let trackId: boolean | number = false;
+
+                  for (let index = 0; index < currentArray.length; index++) {
+                    newArray.push(currentArray[index]);
+                    if (currentArray[index] === bulletPoint) {
+                      const newId = currentArray[index].id + 1;
+                      bulletPointToInsert.id = newId;
+                      newArray.push(bulletPointToInsert);
+                      trackId = newId;
+                    } else if (typeof trackId === "number") {
+                      currentArray[index].id = ++trackId;
+                    }
+                  }
+                  item.text = newArray;
+                  item.currentBulletPointId = bulletPointToInsert.id;
+                  setCurrentInputText(bulletPointToInsert.text);
+
+                  setDocumentUpdateRender((documentUpdateRender) => {
+                    return documentUpdateRender + 1;
+                  });
+                }
               }}
               onKeyPress={(event) => {
                 if (
@@ -170,33 +214,6 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
                   setDocumentUpdateRender((r) => r + 1);
                   return;
                 }
-
-                if (event.nativeEvent.key === "Enter") {
-                  bulletPoint.text = bulletPoint.text.replace("\n", "");
-                  let currentArray = item.text;
-                  const newArray = [];
-                  const bulletPointToInsert = new BulletPoint(null, "");
-                  let trackId: boolean | number = false;
-
-                  for (let index = 0; index < currentArray.length; index++) {
-                    newArray.push(currentArray[index]);
-                    if (currentArray[index] === bulletPoint) {
-                      const newId = currentArray[index].id + 1;
-                      bulletPointToInsert.id = newId;
-                      newArray.push(bulletPointToInsert);
-                      trackId = newId;
-                    } else if (typeof trackId === "number") {
-                      currentArray[index].id = ++trackId;
-                    }
-                  }
-                  item.text = newArray;
-                  item.currentBulletPointId = bulletPointToInsert.id;
-                  setCurrentInputText(bulletPointToInsert.text);
-                  setDocumentUpdateRender((documentUpdateRender) => {
-                    return documentUpdateRender + 1;
-                  });
-                  return;
-                }
               }}
               onContentSizeChange={(e) => {
                 const newHeight = Math.max(
@@ -211,7 +228,15 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
               autoFocus={true}
             ></TextInput>
           ) : (
-            <Text style={[style, { flex: 1 }]}>{bulletPoint.text}</Text>
+            <TextInput
+              style={[style, { flex: 1 }]}
+              multiline
+              value={bulletPoint.text}
+              editable={false}
+              focusable={false}
+            >
+              {/* {bulletPoint.text} */}
+            </TextInput>
           )}
         </Pressable>
       );
@@ -277,7 +302,7 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
             }}
           />
         ) : (
-          <Text
+          <TextInput
             onPress={() => {
               setCurrentBlockToEdit(item);
               setCurrentInputText(item.text);
@@ -285,7 +310,7 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
             style={[determineBlockStyle(item.blockType, colors)]}
           >
             {item.text}
-          </Text>
+          </TextInput>
         )}
       </View>
     );
@@ -300,12 +325,12 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
-    >
-      <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
+    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={"padding"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+      >
         {/* Blocks List */}
         <FlatList
           data={blocksList}
@@ -333,6 +358,18 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
             {/* Add Block */}
             <TouchableOpacity
               activeOpacity={0.85}
+              onPress={() => {
+                router.back();
+              }}
+              // style={[{ backgroundColor: colors.text }]}
+            >
+              <Feather name="arrow-left" size={22} color={colors.text} />
+            </TouchableOpacity>
+
+            <View style={styles.menuDivider} />
+
+            <TouchableOpacity
+              activeOpacity={0.85}
               onPress={createBlock}
               style={[styles.menuIconBtn, { backgroundColor: colors.primary }]}
             >
@@ -352,7 +389,7 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
                 <Text
                   style={[
                     styles.selectorText,
-                    { color: colors.text, marginInline: 5 },
+                    { color: colors.text, marginInline: 4 },
                   ]}
                 >
                   {getBlockTypeText(currentBlockCreationType)}
@@ -485,8 +522,8 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

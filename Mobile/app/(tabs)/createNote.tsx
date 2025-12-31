@@ -6,6 +6,7 @@ import useProject from "@/hooks/useProject";
 import { api } from "@/lib/api";
 import { useNote } from "@/hooks/useNote";
 import TextEditor from "@/components/TextEditor";
+import { NotesPreviewer } from "@/components/NotesPreviewer";
 
 const CreateNote = () => {
   const { colors } = useTheme();
@@ -38,12 +39,17 @@ const CreateNote = () => {
       });
       router.back();
     } catch (err) {
-      console.error("Failed to create note", err);
+      console.error("Failed to save note", err);
     } finally {
     }
   };
 
-  return <TextEditor onSave={handleSave} setNotes={setNote} colors={colors} />;
+  return (
+    <>
+      <TextEditor onSave={handleSave} setNotes={setNote} colors={colors} />
+      {/* <NotesPreviewer /> */}
+    </>
+  );
 };
 
 export default CreateNote;

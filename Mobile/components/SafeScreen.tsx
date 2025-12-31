@@ -1,5 +1,4 @@
 import { PropsWithChildren } from "react";
-import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Props = PropsWithChildren<{

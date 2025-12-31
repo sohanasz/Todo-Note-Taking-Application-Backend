@@ -64,6 +64,7 @@ function ThemedTabs() {
         name="createNote"
         options={{
           href: null,
+          tabBarStyle: { display: "none" },
         }}
       />
 
