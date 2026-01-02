@@ -16,8 +16,12 @@ export async function login(email: string, password: string) {
 
   if (Platform.OS !== "web") {
     await setItemAsync("token", data.token);
+    await setItemAsync("username", data.username);
+    await setItemAsync("name", data.fullname);
   } else {
     localStorage.setItem("token", data.token);
+    localStorage.setItem("username", data.username);
+    localStorage.setItem("name", data.fullname);
   }
 
   return data;

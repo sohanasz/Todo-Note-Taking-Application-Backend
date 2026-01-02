@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
+
 import { ThemeProvider } from "@/hooks/useTheme";
 import { ProjectProvider } from "@/hooks/useProject";
 import { NoteProvider } from "@/hooks/useNote";
@@ -86,11 +87,11 @@ function ThemedTabs() {
       />
 
       <Tabs.Screen
-        name="settings"
+        name="profile"
         options={{
-          title: "Settings",
+          title: "Profile",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" size={size} color={color} />
+            <Feather name="user" size={size} color={color} />
           ),
         }}
       />

@@ -16,7 +16,7 @@ export default function Index() {
 
     const verifyAuth = async () => {
       if (await useAuth({ setIsSignedInState })) {
-        router.push("/(tabs)/home");
+        router.replace("/(tabs)/home");
       } else {
         setSigningIn(false);
       }

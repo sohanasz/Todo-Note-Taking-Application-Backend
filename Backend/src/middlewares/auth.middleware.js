@@ -16,7 +16,6 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log("DECODED", decodedToken);
     const user = await User.findById(decodedToken?.id).select("-password");
 
     if (!user) {
@@ -27,7 +26,6 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     next();
   } catch (error) {
     return res.status(401).json(new ApiResponse(401, {}, "Session Ended"));
-    // throw new ApiError(401, error?.message || "Invalid Access Token");
   }
 });
 
@@ -35,15 +33,12 @@ export const validateProjectPermission = (roles = []) => {
   const execute = asyncHandler(async (req, res, next) => {
     const { projectId } = req.params;
     const userId = req.user._id;
-    // console.log("project Id", projectId, "user Id", typeof userId);
 
     if (!projectId) {
       throw new ApiError(401, "Invalid Project");
     }
 
     const project = await ProjectMember.findOne({
-      // project: projectId,
-      // String interpolation used for passing id as argument in order to ensure string type
       project: new mongoose.Types.ObjectId(`${projectId}`),
       user: userId,
     });

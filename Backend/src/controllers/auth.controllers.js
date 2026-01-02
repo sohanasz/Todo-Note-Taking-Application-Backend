@@ -5,13 +5,10 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { emailVerificationMailgenContent, sendEmail } from "../utils/mail.js";
 
-// const registerUser = asyncHandler(async (req, res) => {
 const registerUser = async (req, res) => {
-  const { email, username, password, role } = req.body;
+  const { email, username, password, fullname } = req.body;
 
-  //validation
-
-  if (!username || !email || !password) {
+  if (!username || !email || !password | !fullname) {
     return res.status(400).json({
       message: "All fields are required",
     });
@@ -21,7 +18,6 @@ const registerUser = async (req, res) => {
     const checkEmail = email;
 
     const existingUser = await User.findOne({ email: checkEmail });
-    console.log("eu", existingUser);
 
     if (existingUser) {
       return res.status(400).json({
@@ -29,32 +25,21 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // const hashedPassword = bcrypt.hash(password, 12);
+    const hashedPassword = bcrypt.hash(password, 12);
 
     const user = await User.create({
       username,
       role: role || "member",
       email,
-      password: password,
+      password: hashedPassword,
     });
-    console.log("USER - ", user);
 
-    // console.log("token 1st Phase CRYPTO - ", token);
     const randomBytesBuffer = crypto.randomBytes(32);
-    // console.log("Step 1 - Random Bytes Buffer:", randomBytesBuffer);
-
-    const nonHexToken = randomBytesBuffer.toString();
-    // console.log("Step 2 - non Hex String Token:", nonHexToken);
-
     const token = randomBytesBuffer.toString("hex");
-    // console.log("Step 3 - Hex Token:", token);
 
     user.emailVerificationToken = token;
-    console.log("eVT - ", user);
 
     await user.save();
-
-    // Emails
 
     const verificationEmailContent = emailVerificationMailgenContent({
       username: user.username,
@@ -96,22 +81,17 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
 
-    console.log(isMatch);
-
     if (!isMatch) {
       return res.status(400).json({
         message: "Invalid email or password",
       });
     }
 
-    //
-
     const token = jwt.sign(
       { id: user._id, role: user.role },
 
       process.env.JWT_SECRET,
       {
-        // expiresIn: 10,
         expiresIn: process.env.JWT_TIME,
       },
     );
@@ -128,17 +108,15 @@ const loginUser = asyncHandler(async (req, res) => {
       token,
       user: {
         id: user._id,
-        name: user.name,
-        role: user.role,
+        username: user.username,
+        fullName: user.fullName,
       },
     });
   } catch (error) {
-    console.log("Login Error", error);
+    res.status(500).json({ message: "Login didn't happen" });
   }
-  //validation
 });
 
-// Get Current User
 const getCurrentUser = asyncHandler(async (req, res) => {
   const user = req.user;
 
@@ -150,10 +128,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 const verifyEmail = asyncHandler(async (req, res) => {
-  console.log(req.params);
-
   const { token } = req.params;
-  console.log("NEXT STEP");
 
   const user = await User.findOne({ emailVerificationToken: token });
   if (!user) {
@@ -168,8 +143,6 @@ const verifyEmail = asyncHandler(async (req, res) => {
   res.status(200).json({
     message: "TOKEN - " + token + "\n end",
   });
-
-  //validation
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
@@ -182,7 +155,6 @@ const logoutUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "User logged out successfully" });
 });
 
-// Resend Email Verification
 const resendEmailVerification = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
@@ -218,7 +190,6 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Verification email resent" });
 });
 
-// Forgot Password Request
 const forgotPasswordRequest = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
@@ -234,7 +205,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
 
   const resetToken = crypto.randomBytes(32).toString("hex");
   user.passwordResetToken = resetToken;
-  user.passwordResetExpires = Date.now() + 3600000; // 1 hour
+  user.passwordResetExpires = Date.now() + 3600000;
   await user.save();
 
   const resetUrl = `${process.env.PASSWORD_RESET_BASE_URL}${resetToken}`;
@@ -249,7 +220,6 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Password reset email sent" });
 });
 
-// Reset Forgotten Password
 const resetForgottenPassword = asyncHandler(async (req, res) => {
   const { token } = req.params;
   const { newPassword } = req.body;
@@ -275,7 +245,6 @@ const resetForgottenPassword = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Password has been reset" });
 });
 
-// Change Current Password
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
@@ -291,7 +260,6 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Password changed successfully" });
 });
 
-// Refresh Access Token
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const token = req.cookies?.token;
 
