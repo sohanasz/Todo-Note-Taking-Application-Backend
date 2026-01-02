@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -13,7 +13,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { api } from "@/lib/api";
 import CreateProjectScreen from "@/components/CreateProjectScreen";
 import useProject from "@/hooks/useProject";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
+import { useNote } from "@/hooks/useNote";
 
 type Project = {
   _id: string;
@@ -30,13 +31,9 @@ export default function ProjectsListScreen() {
   const { project, setProject } = useProject();
   const [loading, setLoading] = useState(true);
   const [showCreateProject, setShowCreateProject] = useState(false);
-
+  const { setNotes } = useNote();
   const { colors } = useTheme();
   const styles = createHomeStyles(colors);
-
-  useEffect(() => {
-    fetchProjects();
-  }, [showCreateProject]);
 
   const fetchProjects = async () => {
     try {
@@ -49,6 +46,12 @@ export default function ProjectsListScreen() {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchProjects();
+    }, [showCreateProject])
+  );
+
   const renderItem = ({ item }: { item: Project }) => {
     return (
       <TouchableOpacity
@@ -56,6 +59,7 @@ export default function ProjectsListScreen() {
         style={styles.card}
         onPress={() => {
           setProject(item);
+          setNotes(null);
           router.push("/select");
         }}
       >

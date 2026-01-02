@@ -1,4 +1,11 @@
-import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native"; // ← Alert added
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native"; // ← Alert added
 import { useEffect, useState, useCallback } from "react";
 import useProject from "@/hooks/useProject";
 import useTheme from "@/hooks/useTheme";
@@ -9,23 +16,13 @@ import SafeScreen from "@/components/SafeScreen";
 import { router, useFocusEffect } from "expo-router";
 import { useNote } from "@/hooks/useNote";
 
-type Note = {
-  _id: string;
-  title: string;
-  content: any[];
-  createdBy: {
-    username: string;
-  };
-  createdAt: string;
-};
-
 const Notes = () => {
   const { project } = useProject();
   const { colors } = useTheme();
   const styles = createNotesStyles(colors);
 
-  const [notes, setNotes] = useState<Note[] | null>(null);
-  const { setNote, setNoteTitle, setNoteId, setUpdateNoteCB } = useNote();
+  const { notes, setNotes, setNote, setNoteTitle, setNoteId, setUpdateNoteCB } =
+    useNote();
 
   useFocusEffect(
     useCallback(() => {
@@ -37,6 +34,7 @@ const Notes = () => {
       const fetchNotes = async () => {
         try {
           const res = await api.get(`/projects/${project._id}/notes`);
+
           setNotes(res.data.data);
         } catch (err) {
           console.error("Failed to fetch notes:", err);
@@ -69,9 +67,11 @@ const Notes = () => {
 
   if (!notes) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.mutedText}>Fetching notes...</Text>
-      </View>
+      <SafeScreen style={styles.container}>
+        <View style={styles.center}>
+          <ActivityIndicator size="large" />
+        </View>
+      </SafeScreen>
     );
   }
 

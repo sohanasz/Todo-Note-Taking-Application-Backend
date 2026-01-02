@@ -9,6 +9,7 @@ import {
 } from "react";
 
 type NoteContextType = {
+  setNotes: () => Dispatch<SetStateAction<[]>>;
   note: {};
   setNote: () => Dispatch<SetStateAction<[] | null>>;
   noteId: string;
@@ -21,7 +22,18 @@ type NoteContextType = {
 
 const NoteContext = createContext<NoteContextType | undefined>(undefined);
 
+type Note = {
+  _id: string;
+  title: string;
+  content: any[];
+  createdBy: {
+    username: string;
+  };
+  createdAt: string;
+};
+
 export function NoteProvider({ children }: { children: ReactNode }) {
+  const [notes, setNotes] = useState<Note[] | null>(null);
   const [note, setNote] = useState<[] | null>(null);
   const [noteId, setNoteId] = useState<string>("");
   const [noteTitle, setNoteTitle] = useState<string>("");
@@ -30,6 +42,8 @@ export function NoteProvider({ children }: { children: ReactNode }) {
   return (
     <NoteContext.Provider
       value={{
+        notes,
+        setNotes,
         note,
         setNote,
         noteId,
