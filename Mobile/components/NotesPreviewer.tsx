@@ -51,11 +51,9 @@ function blockDistinguisher(block) {
   }
 }
 
-export function NotesPreviewer() {
-  const { note } = useNote();
-  const { colors } = useTheme();
+export function NotesPreviewer({ note, colors }) {
   const markdownStyles = createNotesPreviewStyles(colors);
-  const parsed = markdownParser();
+  const parsed = markdownParser(note);
 
   return (
     <SafeScreen style={{ backgroundColor: colors.bg, flex: 1 }} edges={["top"]}>

@@ -9,12 +9,10 @@ import {
   Platform,
   Alert,
 } from "react-native";
-// import { useKeyboard } from "@react-native-community/hooks";
 
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, Feather } from "@expo/vector-icons";
-
 import {
   createCreateNoteStyles,
   determineBlockStyle,
@@ -27,19 +25,19 @@ import {
 } from "@/lib/classes/Block";
 import { router } from "expo-router";
 
-// const { keyboardShown, keyboardHeight } = useKeyboard();
-
-const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
+const TextEditor = ({
+  notesTitle,
+  setNotesTitle,
+  notes,
+  setNotes,
+  colors,
+  onSave,
+  setOnSaveError,
+}) => {
   const styles = createCreateNoteStyles(colors);
 
-  //   States related to editor
-
-  const [title, setTitle] = useState("");
   const [currentBlockCreationType, setCurrentBlockCreationType] =
     useState("heading");
-  const [blocksList, setBlocksList] = useState<
-    Heading[] | Paragraph[] | BulletList[]
-  >([]);
   const [blockId, setBlockId] = useState<number>(0);
   const [currentBlockToEdit, setCurrentBlockToEdit] = useState({});
   const [currentInputText, setCurrentInputText] = useState("");
@@ -48,8 +46,11 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
   const [documentUpdateRender, setDocumentUpdateRender] = useState(0);
 
   useEffect(() => {
-    setNotes(blocksList);
-  }, [blocksList]);
+    if (notes.length > 0) {
+      const lastId = notes[notes.length - 1].id;
+      setBlockId(lastId);
+    }
+  }, [notes]);
 
   const getBlockTypeText = (type) => {
     switch (type) {
@@ -88,8 +89,8 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
 
     setBlockId(blockId + 1);
 
-    setBlocksList((blocksList) => {
-      return [...blocksList, block];
+    setNotes((notes) => {
+      return [...notes, block];
     });
   };
 
@@ -234,9 +235,7 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
               value={bulletPoint.text}
               editable={false}
               focusable={false}
-            >
-              {/* {bulletPoint.text} */}
-            </TextInput>
+            ></TextInput>
           )}
         </Pressable>
       );
@@ -317,11 +316,11 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
   };
 
   const handleDeleteBlock = () => {
-    const updatedBlocksList = blocksList.filter((block) => {
+    const updatedBlocksList = notes.filter((block) => {
       return block !== currentBlockToEdit;
     });
 
-    setBlocksList(updatedBlocksList);
+    setNotes(updatedBlocksList);
   };
 
   return (
@@ -331,9 +330,20 @@ const TextEditor = ({ setNotes, colors, onSave, setOnSaveError }) => {
         behavior={"padding"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
       >
+        {/* Title */}
+        <TextInput
+          value={notesTitle}
+          placeholder="Your Title"
+          // placeholderTextColor={colors.primary}
+          onChangeText={(text) => {
+            setNotesTitle(text);
+          }}
+          style={styles.title}
+        ></TextInput>
+
         {/* Blocks List */}
         <FlatList
-          data={blocksList}
+          data={notes}
           keyExtractor={(item) => String(item.id)}
           numColumns={1}
           showsVerticalScrollIndicator={true}

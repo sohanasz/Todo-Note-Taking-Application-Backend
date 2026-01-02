@@ -1,19 +1,18 @@
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
-import React, { useEffect, useState } from "react";
+import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native"; // ← Alert added
+import { useEffect, useState, useCallback } from "react";
 import useProject from "@/hooks/useProject";
 import useTheme from "@/hooks/useTheme";
 import { api } from "@/lib/api";
 import { createNotesStyles } from "@/assets/styles/notesList";
 import { Ionicons } from "@expo/vector-icons";
 import SafeScreen from "@/components/SafeScreen";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useNote } from "@/hooks/useNote";
 
 type Note = {
   _id: string;
-  name: string;
   title: string;
-  content: string;
+  content: any[];
   createdBy: {
     username: string;
   };
@@ -24,26 +23,39 @@ const Notes = () => {
   const { project } = useProject();
   const { colors } = useTheme();
   const styles = createNotesStyles(colors);
+
   const [notes, setNotes] = useState<Note[] | null>(null);
-  const { setNote } = useNote();
+  const { setNote, setNoteTitle, setNoteId, setUpdateNoteCB } = useNote();
 
-  useEffect(() => {
-    if (!project?._id) {
-      setNotes(null);
-      return;
-    }
-
-    const fetchNotes = async () => {
-      try {
-        const res = await api.get(`/projects/${project._id}/notes`);
-        setNotes(res.data.data);
-      } catch (err) {
-        console.error("Failed to fetch notes:", err);
+  useFocusEffect(
+    useCallback(() => {
+      if (!project?._id) {
+        setNotes(null);
+        return;
       }
-    };
 
-    fetchNotes();
-  }, [project?._id]);
+      const fetchNotes = async () => {
+        try {
+          const res = await api.get(`/projects/${project._id}/notes`);
+          setNotes(res.data.data);
+        } catch (err) {
+          console.error("Failed to fetch notes:", err);
+        }
+      };
+
+      fetchNotes();
+    }, [project?._id])
+  );
+
+  const handleDeleteNote = async (noteId) => {
+    try {
+      const res = await api.delete(`/projects/${project._id}/notes/${noteId}`);
+      Alert.alert(res.data.data.title, res.data.message);
+    } catch (err) {
+      console.error("Failed to delete notes:", err);
+      Alert.alert("something went wriong", "Note couldn't be deleted");
+    }
+  };
 
   if (!project) {
     return (
@@ -65,51 +77,118 @@ const Notes = () => {
 
   return (
     <SafeScreen style={styles.container}>
-      <Text style={styles.title}>{project?.name} · Notes</Text>
+      <Text style={styles.title}>{project.name} · Notes</Text>
 
       <FlatList
         data={notes}
         keyExtractor={(item) => item._id}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            activeOpacity={0.85}
-            style={styles.noteCard}
-            onPress={() => {
-              setNote({ title: item.title, content: item.content });
-              router.push("/previewNote");
-            }}
-          >
-            <Text style={styles.noteTitle} numberOfLines={2}>
-              {item.title || "Title"}
-            </Text>
+          <View style={styles.noteCard}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              {/* Left block: Title + Meta */}
+              <View style={{ flex: 1, paddingRight: 12 }}>
+                <Text style={styles.noteTitle} numberOfLines={2}>
+                  {item.title || "Untitled"}
+                </Text>
 
-            <Text style={styles.noteContent} numberOfLines={5}>
-              {item.content}
-            </Text>
+                <Text style={styles.metaText}>@{item.createdBy.username}</Text>
+                <Text style={styles.metaText}>
+                  {new Date(item.createdAt).toLocaleDateString("en-US", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </Text>
+              </View>
 
-            <View style={styles.metaRow}>
-              <Text style={styles.metaText}>@{item.createdBy.username}</Text>
-              <Text style={styles.metaText}>
-                {new Date(item.createdAt).toLocaleString("en-US", {
-                  month: "short",
-                  year: "numeric",
-                  day: "numeric",
-                })}
-              </Text>
+              {/* Right block: Actions */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                {/* Edit */}
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={{
+                    paddingHorizontal: 14,
+                    paddingVertical: 8,
+                    borderRadius: 8,
+                    backgroundColor: colors.primary,
+                  }}
+                  onPress={() => {
+                    setNoteTitle(item.title);
+                    setNote(item.content);
+                    setNoteId(item._id);
+                    setUpdateNoteCB(true);
+                    router.push("/createNote");
+                  }}
+                >
+                  <Ionicons name="build" size={16} color={"white"}></Ionicons>
+                </TouchableOpacity>
+
+                {/* Preview */}
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={{
+                    paddingHorizontal: 14,
+                    paddingVertical: 8,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: colors.primary,
+                  }}
+                  onPress={() => {
+                    setNoteTitle(item.title);
+                    setNote(item.content);
+                    setNoteId(item._id);
+                    setUpdateNoteCB(true);
+                    router.push("/previewNote");
+                  }}
+                >
+                  <Text style={{ color: colors.primary, fontWeight: "600" }}>
+                    Preview
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 8,
+                    backgroundColor: "#E53935",
+                  }}
+                  onPress={() => {
+                    handleDeleteNote(item._id);
+                  }}
+                >
+                  <Ionicons name="close" size={16} color={"white"}></Ionicons>
+                </TouchableOpacity>
+              </View>
             </View>
-          </TouchableOpacity>
+          </View>
         )}
       />
 
-      {/* Create Note FAB */}
+      {/* Floating Action Button */}
       <TouchableOpacity
         activeOpacity={0.85}
         style={styles.fab}
         onPress={() => {
+          setNoteTitle("");
+          setNote([]);
+          setNoteId("");
+          setUpdateNoteCB(false);
           router.push("/createNote");
         }}
       >

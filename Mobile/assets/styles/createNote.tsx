@@ -3,6 +3,13 @@ import { ColorScheme } from "@/hooks/useTheme";
 
 export const createCreateNoteStyles = (colors: ColorScheme) =>
   StyleSheet.create({
+    title: {
+      color: colors.primary,
+      fontSize: 40,
+      marginTop: 13,
+      marginBottom: 13,
+      fontWeight: 800,
+    },
     container: {
       flex: 1,
       backgroundColor: colors.bg,

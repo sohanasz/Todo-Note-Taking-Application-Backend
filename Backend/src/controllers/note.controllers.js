@@ -32,7 +32,6 @@ const createNote = asyncHandler(async (req, res) => {
 });
 
 const getNotes = asyncHandler(async (req, res) => {
-  // get all notes
   const { projectId } = req.params;
   const project = await Project.findById(
     new mongoose.Types.ObjectId(projectId),
@@ -55,8 +54,6 @@ const getNotes = asyncHandler(async (req, res) => {
 const getNoteById = async (req, res) => {
   let { projectId, noteId } = req.params;
   projectId = new mongoose.Types.ObjectId(projectId);
-  // console.log(projectId);
-  // console.dir(projectId);
 
   const project = await Project.findById(projectId);
 
@@ -65,13 +62,10 @@ const getNoteById = async (req, res) => {
   }
 
   const note = await ProjectNote.findById(new mongoose.Types.ObjectId(noteId));
-  // console.log(note);
 
   if (!note) {
     throw new ApiError(401, "Note not found");
   }
-
-  // console.log(note.project.toHexString() === projectId.toHexString());
 
   if (note.project.toHexString() !== projectId.toHexString()) {
     throw new ApiError(403, "Invalid access of note");
@@ -81,27 +75,30 @@ const getNoteById = async (req, res) => {
 };
 
 const updateNote = async (req, res) => {
-  // update note
-  const { projectId, noteId } = req.params;
-  const { content } = req.body;
+  try {
+    const { projectId, noteId } = req.params;
+    const { title, content } = req.body;
 
-  const existingNote = await ProjectNote.findById(
-    new mongoose.Types.ObjectId(noteId),
-  );
+    const existingNote = await ProjectNote.findById(
+      new mongoose.Types.ObjectId(noteId),
+    );
 
-  if (!existingNote) {
-    throw new ApiError(401, "Note not found");
+    if (!existingNote) {
+      throw new ApiError(401, "Note not found");
+    }
+
+    const updatedNote = await ProjectNote.findByIdAndUpdate(
+      new mongoose.Types.ObjectId(noteId),
+      { title, content },
+      { new: true },
+    ).populate("createdBy", "username fullname avatar");
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, updatedNote, "Updated Note"));
+  } catch (error) {
+    return res.status(500).json(new ApiResponse(500, {}, "Notes did not save"));
   }
-
-  const updatedNote = await ProjectNote.findByIdAndUpdate(
-    noteId,
-    { content },
-    { new: true },
-  ).populate("createdBy", "username fullname avatar");
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, updatedNote, "Updated Note"));
 };
 
 const deleteNote = async (req, res) => {

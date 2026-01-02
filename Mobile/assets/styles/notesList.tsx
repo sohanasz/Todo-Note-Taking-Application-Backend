@@ -19,8 +19,8 @@ export const createNotesStyles = (colors: ColorScheme) =>
     },
 
     listContent: {
-      paddingBottom: 140,
-      paddingHorizontal: 4, // ✅ prevents shadow clipping
+      paddingBottom: 100,
+      paddingHorizontal: 4,
     },
 
     row: {
@@ -29,11 +29,13 @@ export const createNotesStyles = (colors: ColorScheme) =>
     },
 
     noteCard: {
-      width: "48%",
-      minHeight: 160,
+      width: "100%",
+      minHeight: 100,
       backgroundColor: colors.surface,
       borderRadius: 16,
       padding: 14,
+      marginBottom: 12,
+      justifyContent: "center",
 
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 4 },
