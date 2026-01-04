@@ -4,6 +4,7 @@ import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { emailVerificationMailgenContent, sendEmail } from "../utils/mail.js";
+import { ApiResponse } from "../utils/api-response.js";
 
 const registerUser = async (req, res) => {
   const { email, username, password, fullname } = req.body;
@@ -25,13 +26,11 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const hashedPassword = bcrypt.hash(password, 12);
-
     const user = await User.create({
-      username,
-      role: role || "member",
-      email,
-      password: hashedPassword,
+      fullname: fullname,
+      username: username,
+      email: email,
+      password: password,
     });
 
     const randomBytesBuffer = crypto.randomBytes(32);
@@ -52,9 +51,21 @@ const registerUser = async (req, res) => {
       mailgenContent: verificationEmailContent,
     });
 
-    res.status(200).json({
-      message: "Registered",
-    });
+    res.status(201).json(
+      new ApiResponse(
+        201,
+        {
+          fullname: user.fullname,
+          username: user.username,
+          email: user.email,
+          avatar: user.avatar,
+          _id: user._id,
+          isEmailVerified: user.isEmailVerified,
+          token,
+        },
+        "Registration Success",
+      ),
+    );
   } catch (error) {
     res.status(400).json({
       message: "Error occured while registration",
@@ -72,14 +83,16 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ email });
+    const findBy = email ? { email } : { username };
+    const user = await User.findOne(findBy);
+
     if (!user) {
       return res.status(400).json({
         message: "Invalid email or password",
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await user.isPasswordCorrect(password);
 
     if (!isMatch) {
       return res.status(400).json({
@@ -89,12 +102,12 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
-
       process.env.JWT_SECRET,
       {
         expiresIn: process.env.JWT_TIME,
       },
     );
+
     const cookieOptions = {
       httpOnly: true,
       secure: true,
@@ -102,16 +115,21 @@ const loginUser = asyncHandler(async (req, res) => {
     };
     res.cookie("token", token, cookieOptions);
 
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-      token,
-      user: {
-        id: user._id,
-        username: user.username,
-        fullName: user.fullName,
-      },
-    });
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          fullname: user.fullname,
+          username: user.username,
+          email: user.email,
+          avatar: user.avatar,
+          _id: user._id,
+          isEmailVerified: user.isEmailVerified,
+          token,
+        },
+        "Login Success",
+      ),
+    );
   } catch (error) {
     res.status(500).json({ message: "Login didn't happen" });
   }

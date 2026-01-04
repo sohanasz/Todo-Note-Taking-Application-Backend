@@ -3,37 +3,72 @@ import {
   AvailableTaskStatuses,
   AvailableUserRoles,
 } from "../utils/constants.js";
+import { ApiError } from "../utils/api-error.js";
 
 const userRegisterValidator = () => {
   return [
+    body("fullname").trim().notEmpty().withMessage("Full name is required"),
+    body("username")
+      .isString()
+      .withMessage("Username must be a string")
+      .trim()
+      .isLength({ min: 3, max: 20 })
+      .withMessage("Username must be between 3 and 20 characters")
+      .matches(/^[a-zA-Z0-9_]+$/)
+      .withMessage(
+        "Username can contain only letters, numbers, and underscores",
+      ),
     body("email")
       .trim()
       .notEmpty()
       .withMessage("Email is required")
       .isEmail()
       .withMessage("Email is invalid"),
-    body("username")
-      .trim()
+
+    body("password")
       .notEmpty()
-      .withMessage("Username is required")
-      .isLowercase()
-      .withMessage("Username must be lowercase")
-      .isLength({ min: 3 })
-      .withMessage("Username must be at lease 3 characters long"),
-    body("password").trim().notEmpty().withMessage("Password is required"),
-    body("fullName")
-      .optional()
-      .trim()
-      .notEmpty()
-      .withMessage("Full name is required"),
+      .withMessage("Password is required")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters long")
+      .matches(/[A-Za-z]/)
+      .withMessage("Password must contain at least one letter")
+      .matches(/[0-9]/)
+      .withMessage("Password must contain at least one number"),
   ];
 };
 
 const userLoginValidator = () => {
   return [
-    body("email").optional().isEmail().withMessage("Email is invalid"),
-    body("username").optional(),
-    body("password").notEmpty().withMessage("Password is required"),
+    body("email").optional().trim().isEmail().withMessage("Email is invalid"),
+
+    body("username")
+      .optional()
+      .isString()
+      .withMessage("Username must be a string")
+      .trim()
+      .isLength({ min: 3, max: 20 })
+      .withMessage("Username must be between 3 and 20 characters")
+      .matches(/^[a-zA-Z0-9_]+$/)
+      .withMessage(
+        "Username can contain only letters, numbers, and underscores",
+      ),
+
+    body("password")
+      .notEmpty()
+      .withMessage("Password is required")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters long")
+      .matches(/[A-Za-z]/)
+      .withMessage("Password must contain at least one letter")
+      .matches(/[0-9]/)
+      .withMessage("Password must contain at least one number"),
+
+    body().custom((body) => {
+      if (!body.email && !body.username) {
+        throw new ApiError(422, "Email or username is required");
+      }
+      return true;
+    }),
   ];
 };
 

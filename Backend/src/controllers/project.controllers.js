@@ -6,9 +6,10 @@ import { ProjectNote } from "../models/note.models.js";
 import { Project } from "../models/project.models.js";
 import { ProjectMember } from "../models/projectmember.models.js";
 import { UserRolesEnum } from "../utils/constants.js";
+import { User } from "../models/user.models.js";
 
 const createProject = asyncHandler(async (req, res) => {
-  const user = req.user; // From verifyJWT middleware
+  const user = req.user;
 
   if (!user) {
     throw new ApiError(401, "Unauthorized");
@@ -143,46 +144,75 @@ const getProjectMembers = asyncHandler(async (req, res) => {
 
   const members = await ProjectMember.find({ project: projectId }).populate(
     "user",
-    "name email",
+    "_id username fullname",
   );
   return res
     .status(200)
     .json(new ApiResponse(200, members, "Project members fetched"));
 });
 
-// ADD membership to project (only by admin)
 const addMemberToProject = asyncHandler(async (req, res) => {
-  const userId = req.user._id;
-  const { projectId } = req.params;
-  const { userIdToAdd, role } = req.body;
+  try {
+    const userId = req.user._id;
+    const { projectId } = req.params;
+    const { usernameToAdd, role } = req.body;
 
-  const requester = await ProjectMember.findOne({
-    user: userId,
-    project: projectId,
-  });
+    if (!userId || !projectId || !usernameToAdd || !role) {
+      throw new ApiError(401, "Invalid Operation");
+    }
 
-  if (!requester || requester.role !== UserRolesEnum.ADMIN) {
-    throw new ApiError(403, "Only admins can add members");
+    const requester = await ProjectMember.findOne({
+      user: userId,
+      project: projectId,
+    });
+
+    if (
+      !requester ||
+      (requester.role !== UserRolesEnum.ADMIN &&
+        requester.role !== UserRolesEnum.PROJECT_ADMIN)
+    ) {
+      throw new ApiError(403, "Only authorized can add members");
+    }
+
+    const userToAdd = await User.findOne({
+      username: usernameToAdd,
+    });
+
+    if (!userToAdd) {
+      throw new ApiError(
+        401,
+        `User does not exist with username: ${usernameToAdd}`,
+      );
+    }
+
+    const existing = await ProjectMember.findOne({
+      user: userToAdd._id,
+      project: projectId,
+    });
+    if (existing) {
+      throw new ApiError(
+        400,
+        `User is already a member of the project: ${usernameToAdd}`,
+      );
+    }
+
+    const newMember = await ProjectMember.create({
+      user: userToAdd,
+      project: projectId,
+      role: role || UserRolesEnum.MEMBER,
+    });
+
+    return res
+      .status(201)
+      .json(new ApiResponse(201, newMember, "Member added successfully"));
+  } catch (error) {
+    console.log("PROJECT MEMBER", error.message);
+    return res
+      .status(error.statusCode)
+      .json(new ApiResponse(error.statusCode, {}, error.message));
   }
-
-  const existing = await ProjectMember.findOne({
-    user: userIdToAdd,
-    project: projectId,
-  });
-  if (existing) {
-    throw new ApiError(400, "User is already a membership of the project");
-  }
-
-  const newMember = await ProjectMember.create({
-    user: userIdToAdd,
-    project: projectId,
-    role: role || UserRolesEnum.MEMBER,
-  });
-
-  return res.status(201).json(new ApiResponse(201, newMember, "Member added"));
 });
 
-// DELETE membership from project (only by admin)
 const deleteMember = asyncHandler(async (req, res) => {
   const { projectId, memberId } = req.params;
   const userId = req.user._id;

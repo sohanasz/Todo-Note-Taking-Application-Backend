@@ -13,6 +13,7 @@ export interface ColorScheme {
   bg: string;
   surface: string;
   text: string;
+  invertedText: string;
   textMuted: string;
   border: string;
   primary: string;
@@ -41,6 +42,7 @@ const lightColors: ColorScheme = {
   bg: "#F6F7FB",
   surface: "#FFFFFF",
   text: "#1A1A1A",
+  invertedText: "#F8FAFC",
   textMuted: "#6B7280",
   border: "#E5E7EB",
   primary: "#4F46E5",
@@ -69,6 +71,7 @@ const darkColors: ColorScheme = {
   bg: "#0B1020",
   surface: "#151B2D",
   text: "#F8FAFC",
+  invertedText: "#1A1A1A",
   textMuted: "#9CA3AF",
   border: "#1F2937",
   primary: "#6366F1",
@@ -125,3 +128,13 @@ export default function useTheme() {
   }
   return context;
 }
+
+export const hexToRgba = (hex, opacity) => {
+  hex = hex.replace("#", "");
+
+  let r = parseInt(hex.substring(0, 2), 16);
+  let g = parseInt(hex.substring(2, 4), 16);
+  let b = parseInt(hex.substring(4, 6), 16);
+
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};

@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
 } from "react-native"; // ← Alert added
 import { useEffect, useState, useCallback } from "react";
+import * as Animatable from "react-native-animatable";
 import useProject from "@/hooks/useProject";
 import useTheme from "@/hooks/useTheme";
 import { api } from "@/lib/api";
@@ -85,7 +86,13 @@ const Notes = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
-          <View style={styles.noteCard}>
+          <Animatable.View
+            animation="pulse"
+            duration={500}
+            easing="ease-out-cubic"
+            useNativeDriver
+            style={styles.noteCard}
+          >
             <View
               style={{
                 flexDirection: "row",
@@ -176,7 +183,7 @@ const Notes = () => {
                 </TouchableOpacity>
               </View>
             </View>
-          </View>
+          </Animatable.View>
         )}
       />
 

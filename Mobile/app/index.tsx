@@ -5,11 +5,14 @@ import SignUpScreen from "../components/SignUp";
 import useAuth from "@/hooks/useAuth";
 import { router } from "expo-router";
 import { initiateInterceptors } from "@/lib/api";
+import useTheme from "@/hooks/useTheme";
 
 export default function Index() {
   const [signInScreen, setSignInScreen] = useState<boolean>(false);
   const [isSignedInState, setIsSignedInState] = useState<boolean>(false);
   const [signingIn, setSigningIn] = useState(true);
+
+  const { colors } = useTheme();
 
   useEffect(() => {
     initiateInterceptors({ setIsSignedInState });
@@ -42,6 +45,7 @@ export default function Index() {
   return (
     <View
       style={{
+        backgroundColor: colors.bg,
         flex: 1,
         justifyContent: "center",
         alignItems: "center",

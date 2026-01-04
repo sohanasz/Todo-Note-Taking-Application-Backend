@@ -186,7 +186,6 @@ export function determineBlockStyle(blockType: string, colors: ColorScheme) {
     bulletList: {
       color: colors.text,
       fontSize: 15,
-      marginVertical: 5,
     },
     numericList: {
       color: colors.text,

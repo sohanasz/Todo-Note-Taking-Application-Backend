@@ -7,6 +7,10 @@ export const validate = (req, res, next) => {
     return next();
   }
 
+  // For Debugging `Recieved data is not valid`
+  console.log("ERROR ", errors);
+  console.log("THIS", req.body);
+
   const extractedError = [];
   errors.array().map((err) =>
     extractedError.push({

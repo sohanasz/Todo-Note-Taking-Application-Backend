@@ -44,9 +44,10 @@ const Profile = () => {
       <View style={styles.profileCard}>
         <Image
           source={{
-            uri: "https://i.pravatar.cc/300",
+            uri: "https://randomuser.me/api/portraits/men/1.jpg",
           }}
           style={styles.avatar}
+          resizeMode="cover"
         />
 
         <View style={styles.profileInfo}>

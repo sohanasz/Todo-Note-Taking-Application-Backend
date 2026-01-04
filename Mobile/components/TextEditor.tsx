@@ -46,7 +46,7 @@ const TextEditor = ({
   const [documentUpdateRender, setDocumentUpdateRender] = useState(0);
 
   useEffect(() => {
-    if (notes.length > 0) {
+    if (notes && notes.length > 0) {
       const lastId = notes[notes.length - 1].id;
       setBlockId(lastId);
     }
@@ -102,7 +102,6 @@ const TextEditor = ({
           key={bulletPoint.id}
           style={{
             flexDirection: "row",
-            alignItems: "center",
           }}
           onPress={() => {
             item.currentBulletPointId = bulletPoint.id;
@@ -128,6 +127,7 @@ const TextEditor = ({
                   borderRadius: 16,
                   overflow: "hidden",
                   flex: 1,
+                  padding: 10,
                 },
               ]}
               value={currentInputText}
@@ -230,7 +230,7 @@ const TextEditor = ({
             ></TextInput>
           ) : (
             <TextInput
-              style={[style, { flex: 1 }]}
+              style={[style, { flex: 1, paddingInline: 10 }]}
               multiline
               value={bulletPoint.text}
               editable={false}

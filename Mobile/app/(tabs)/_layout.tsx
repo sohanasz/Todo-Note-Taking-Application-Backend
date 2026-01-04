@@ -43,6 +43,13 @@ function ThemedTabs() {
         }}
       />
 
+      <Tabs.Screen
+        name="editProject"
+        options={{
+          href: null,
+        }}
+      />
+
       {/* Hidden from tab bar */}
       <Tabs.Screen
         name="select"

@@ -31,11 +31,29 @@ router
 router
   .route("/projects/:projectId/members")
   .get(validateProjectPermission(AvailableUserRoles), getProjectMembers)
-  .post(validateProjectPermission([UserRolesEnum.ADMIN]), addMemberToProject);
+  .post(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+    ]),
+    addMemberToProject,
+  );
 
 router
   .route("/projects/:projectId/members/:memberId")
-  .delete(validateProjectPermission([UserRolesEnum.ADMIN]), deleteMember)
-  .put(validateProjectPermission([UserRolesEnum.ADMIN]), updateMemberRole);
+  .delete(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+    ]),
+    deleteMember,
+  )
+  .put(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+    ]),
+    updateMemberRole,
+  );
 
 export default router;
