@@ -31,12 +31,14 @@ export default function SignInScreen({ setSignInScreen }: any) {
     try {
       setLoading(true);
       const res = await login(value, password);
+
       if (res.statusCode === 200) {
         router.replace("/(tabs)/home");
       } else {
         Alert.alert("Login error", "Some error occurred, try again!");
       }
     } catch (err: any) {
+      console.log(err);
       Alert.alert(
         "Login failed",
         err?.response?.data?.message ?? "Something went wrong"

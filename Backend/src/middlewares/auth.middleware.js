@@ -25,6 +25,8 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.log("MIDDLEWARE", error);
+
     return res.status(401).json(new ApiResponse(401, {}, "Session Ended"));
   }
 });

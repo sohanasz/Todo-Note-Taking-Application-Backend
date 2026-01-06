@@ -46,23 +46,27 @@ const createProject = asyncHandler(async (req, res) => {
 });
 
 const getProjects = asyncHandler(async (req, res) => {
-  const userId = req.user._id;
+  try {
+    const userId = req.user._id;
 
-  const projectMemberships = await ProjectMember.find({
-    user: userId,
-  }).populate({
-    path: "project",
-    populate: {
-      path: "createdBy",
-      model: "User",
-    },
-  });
+    const projectMemberships = await ProjectMember.find({
+      user: userId,
+    }).populate({
+      path: "project",
+      populate: {
+        path: "createdBy",
+        model: "User",
+      },
+    });
 
-  const projects = projectMemberships.map((proMem) => proMem.project);
+    const projects = projectMemberships.map((proMem) => proMem.project);
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, projects, "Projects fetched"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, projects, "Projects fetched"));
+  } catch (error) {
+    console.log("Catch Projects", error);
+  }
 });
 
 const getProjectById = asyncHandler(async (req, res) => {

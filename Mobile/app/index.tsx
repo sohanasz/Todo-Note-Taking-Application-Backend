@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import SignInScreen from "../components/SignIn";
 import SignUpScreen from "../components/SignUp";
-import useAuth from "@/hooks/useAuth";
 import { router } from "expo-router";
 import { initiateInterceptors } from "@/lib/api";
 import useTheme from "@/hooks/useTheme";
+import { useAuth } from "@/lib/auth";
 
 export default function Index() {
-  const [signInScreen, setSignInScreen] = useState<boolean>(false);
+  const [signInScreen, setSignInScreen] = useState<boolean>(true);
   const [isSignedInState, setIsSignedInState] = useState<boolean>(false);
   const [signingIn, setSigningIn] = useState(true);
 

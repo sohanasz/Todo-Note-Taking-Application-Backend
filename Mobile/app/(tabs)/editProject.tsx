@@ -85,70 +85,80 @@ export default function EditProject() {
     }
   };
 
-  const renderMember = ({ item }: any) => (
-    <Animatable.View animation="pulse" duration={400} useNativeDriver>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          alignContent: "center",
-          justifyContent: "space-between",
-          paddingVertical: 14,
-          paddingInline: 16,
-          borderBottomWidth: 1,
-          borderColor: colors.border,
-        }}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={{ color: colors.text, fontSize: 14 }}>
-            {item.user.fullname}
-          </Text>
-          <Text
-            style={{
-              backgroundColor: colors.primary,
-              color: colors.invertedText,
-              padding: 8,
-              marginLeft: 4,
-              borderRadius: 25,
-              fontSize: 13,
-              fontWeight: 700,
-              textAlign: "center",
-              textAlignVertical: "center",
-            }}
-          >
-            @{item.user.username}
-          </Text>
-        </View>
+  const renderMember = ({ item }: any) => {
+    if (!item.user) {
+      return <></>;
+    }
 
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <TouchableOpacity
-            style={{
-              paddingVertical: 6,
-              paddingHorizontal: 14,
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: colors.primary,
-              marginRight: 8,
-            }}
-          >
-            <Text style={{ color: colors.text, fontSize: 13 }}>
-              {item.role}
+    return (
+      <Animatable.View animation="pulse" duration={400} useNativeDriver>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            alignContent: "center",
+            justifyContent: "space-between",
+            paddingVertical: 14,
+            paddingInline: 16,
+            borderBottomWidth: 1,
+            borderColor: colors.border,
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text style={{ color: colors.text, fontSize: 14 }}>
+              {item.user.fullname}
+              {console.log(item.user)}
             </Text>
-          </TouchableOpacity>
+            <Text
+              style={{
+                backgroundColor: colors.primary,
+                color: colors.invertedText,
+                padding: 8,
+                marginLeft: 4,
+                borderRadius: 25,
+                fontSize: 13,
+                fontWeight: 700,
+                textAlign: "center",
+                textAlignVertical: "center",
+              }}
+            >
+              @{item.user.username}
+            </Text>
+          </View>
 
-          {item.role !== "admin" && (
-            <TouchableOpacity onPress={() => handleRemoveMember(item.user._id)}>
-              <Ionicons name="close" size={20} color={colors.text} />
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity
+              style={{
+                paddingVertical: 6,
+                paddingHorizontal: 14,
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: colors.primary,
+                marginRight: 8,
+              }}
+            >
+              <Text style={{ color: colors.text, fontSize: 13 }}>
+                {item.role}
+              </Text>
             </TouchableOpacity>
-          )}
+
+            {item.role !== "admin" && (
+              <TouchableOpacity
+                onPress={() => handleRemoveMember(item.user._id)}
+              >
+                <Ionicons name="close" size={20} color={colors.text} />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
-    </Animatable.View>
-  );
+      </Animatable.View>
+    );
+  };
 
   return (
     <SafeScreen style={styles.container}>
       <Text style={styles.sectionTitle}>Manage Members</Text>
+      <Text style={styles.sectionTitle}>{project.name}</Text>
 
       <Animatable.View
         animation="fadeInDown"

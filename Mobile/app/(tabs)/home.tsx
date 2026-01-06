@@ -45,6 +45,7 @@ export default function ProjectsListScreen() {
       const fetchProjects = async () => {
         try {
           const res = await api.get("/projects");
+
           setProjects(res.data.data);
         } catch (err) {
           console.error("Failed to fetch projects", err);

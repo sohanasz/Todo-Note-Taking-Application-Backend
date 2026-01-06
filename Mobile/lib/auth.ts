@@ -1,4 +1,3 @@
-// lib/auth.ts
 import { Platform } from "react-native";
 import { api } from "./api";
 import { setItemAsync, deleteItemAsync, getItemAsync } from "expo-secure-store";
@@ -7,6 +6,30 @@ type AuthResponse = {
   token: string;
   success: boolean;
 };
+
+async function setLocalData(data, saveToken = true) {
+  console.log("LOCAL DATA", data, saveToken);
+
+  if (Platform.OS !== "web") {
+    if (saveToken) {
+      await setItemAsync("token", data.token);
+    }
+    await setItemAsync("userId", data._id);
+    await setItemAsync("username", data.username);
+    await setItemAsync("fullname", data.fullname);
+    await setItemAsync("email", data.email);
+    await setItemAsync("avatar", data.avatar.url);
+    await setItemAsync("isEmailVerified", data.isEmailVerified.toString());
+  } else {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("userId", data._id);
+    localStorage.setItem("username", data.username);
+    localStorage.setItem("name", data.fullname);
+    localStorage.setItem("email", data.email);
+    localStorage.setItem("avatar", data.avatar);
+    localStorage.setItem("isEmailVerified", data.isEmailVerified);
+  }
+}
 
 function loginDataValidation(identifier: string, password: string) {
   const value = identifier.trim();
@@ -18,25 +41,10 @@ function loginDataValidation(identifier: string, password: string) {
 
 export async function login(value: string, password: string) {
   const data = loginDataValidation(value, password);
-  console.log(data, "DATA");
 
   const res = await api.post<AuthResponse>("/login", data);
 
-  if (Platform.OS !== "web") {
-    await setItemAsync("token", res.data.data.token);
-    await setItemAsync("username", res.data.data.username);
-    await setItemAsync("fullname", res.data.data.fullname);
-    await setItemAsync("email", res.data.data.email);
-    await setItemAsync("avatar", res.data.data.avatar);
-    await setItemAsync("isEmailVerified", res.data.data.isEmailVerified);
-  } else {
-    localStorage.setItem("token", res.data.data.token);
-    localStorage.setItem("username", res.data.data.username);
-    localStorage.setItem("name", res.data.data.fullname);
-    localStorage.setItem("email", res.data.data.email);
-    localStorage.setItem("avatar", res.data.data.avatar);
-    localStorage.setItem("isEmailVerified", res.data.data.isEmailVerified);
-  }
+  await setLocalData(res.data.data);
 
   return res.data;
 }
@@ -54,25 +62,34 @@ export async function register(
     password: password,
   });
 
-  if (Platform.OS !== "web") {
-    await setItemAsync("token", res.data.data.token);
-    await setItemAsync("username", res.data.data.username);
-    await setItemAsync("fullname", res.data.data.fullname);
-    await setItemAsync("email", res.data.data.email);
-    await setItemAsync("avatar", res.data.data.avatar);
-    await setItemAsync("isEmailVerified", res.data.data.isEmailVerified);
-  } else {
-    localStorage.setItem("token", res.data.data.token);
-    localStorage.setItem("username", res.data.data.username);
-    localStorage.setItem("name", res.data.data.fullname);
-    localStorage.setItem("email", res.data.data.email);
-    localStorage.setItem("avatar", res.data.data.avatar);
-    localStorage.setItem("isEmailVerified", res.data.data.isEmailVerified);
-  }
-
+  await setLocalData(res.data.data);
   return res.data;
 }
 
 export async function logout() {
   await deleteItemAsync("token");
+}
+
+export async function useAuth({ setIsSignedInState }) {
+  let token: string;
+
+  if (Platform.OS !== "web") {
+    token = await getItemAsync("token");
+  } else {
+    token = localStorage.getItem("token");
+  }
+
+  if (token) {
+    const res = await api.get("/login/user");
+
+    if (res && res.status === 200) {
+      await setLocalData(res.data.user, false);
+
+      setIsSignedInState(true);
+
+      return true;
+    }
+  }
+  setIsSignedInState(false);
+  return false;
 }
