@@ -56,10 +56,15 @@ const getProjects = asyncHandler(async (req, res) => {
       populate: {
         path: "createdBy",
         model: "User",
+        select: "username",
       },
     });
 
-    const projects = projectMemberships.map((proMem) => proMem.project);
+    console.log("MEMS", projectMemberships);
+
+    const projects = projectMemberships.map((proMem) => {
+      return { project: proMem.project, role: proMem.role };
+    });
 
     return res
       .status(200)
@@ -160,6 +165,7 @@ const addMemberToProject = asyncHandler(async (req, res) => {
     const userId = req.user._id;
     const { projectId } = req.params;
     const { usernameToAdd, role } = req.body;
+    console.log("CHECK", userId, projectId, usernameToAdd, role);
 
     if (!userId || !projectId || !usernameToAdd || !role) {
       throw new ApiError(401, "Invalid Operation");
@@ -193,6 +199,7 @@ const addMemberToProject = asyncHandler(async (req, res) => {
       user: userToAdd._id,
       project: projectId,
     });
+
     if (existing) {
       throw new ApiError(
         400,
@@ -201,10 +208,11 @@ const addMemberToProject = asyncHandler(async (req, res) => {
     }
 
     const newMember = await ProjectMember.create({
-      user: userToAdd,
+      user: new mongoose.Types.ObjectId(userToAdd._id),
       project: projectId,
       role: role || UserRolesEnum.MEMBER,
     });
+    console.log("USER INFO", userToAdd, "NEW MEMBER", newMember);
 
     return res
       .status(201)

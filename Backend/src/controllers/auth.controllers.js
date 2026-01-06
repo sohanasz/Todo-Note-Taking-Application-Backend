@@ -84,13 +84,14 @@ const loginUser = asyncHandler(async (req, res) => {
 
   try {
     const findBy = email ? { email } : { username };
-    const user = await User.findOne(findBy);
+    const user = await User.findOne(findBy).select("+password");
 
     if (!user) {
       return res.status(400).json({
         message: "Invalid email or password",
       });
     }
+    console.log("TEST ", password);
 
     const isMatch = await user.isPasswordCorrect(password);
 

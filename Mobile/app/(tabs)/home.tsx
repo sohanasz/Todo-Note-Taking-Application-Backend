@@ -9,16 +9,16 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import * as Animatable from "react-native-animatable";
-
 import SafeScreen from "@/components/SafeScreen";
 import CreateProjectScreen from "@/components/CreateProjectScreen";
+import { createHomeStyles } from "@/assets/styles/home";
+import { api } from "@/lib/api";
 
 import useTheme, { hexToRgba } from "@/hooks/useTheme";
 import useProject from "@/hooks/useProject";
 import { useNote } from "@/hooks/useNote";
 
-import { api } from "@/lib/api";
-import { createHomeStyles } from "@/assets/styles/home";
+import { USER_ROLES } from "@/lib/constants";
 
 type Project = {
   _id: string;
@@ -35,7 +35,7 @@ export default function ProjectsListScreen() {
   const [loading, setLoading] = useState(true);
   const [showCreateProject, setShowCreateProject] = useState(false);
 
-  const { project, setProject } = useProject();
+  const { project, setProject, setRole } = useProject();
   const { setNotes } = useNote();
   const { colors } = useTheme();
   const styles = createHomeStyles(colors);
@@ -58,7 +58,7 @@ export default function ProjectsListScreen() {
   );
 
   const renderItem = ({ item }: { item: Project }) => {
-    const selected = project?._id === item._id;
+    const selected = project?._id === item.project._id;
 
     return (
       <Animatable.View
@@ -71,12 +71,21 @@ export default function ProjectsListScreen() {
           activeOpacity={0.9}
           style={styles.card}
           onPress={() => {
-            setProject(item);
+            setProject(item.project);
+
+            setRole(item.role);
             setNotes(null);
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity onPress={() => setProject(item)}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              alignContent: "center",
+              marginBottom: 10,
+            }}
+          >
+            <TouchableOpacity onPress={() => setProject(item.project)}>
               <Ionicons
                 name={selected ? "radio-button-on" : "radio-button-off"}
                 size={20}
@@ -85,16 +94,62 @@ export default function ProjectsListScreen() {
               />
             </TouchableOpacity>
 
-            <Text style={[styles.projectName, { flex: 1 }]}>{item.name}</Text>
+            <Text
+              style={[
+                styles.projectName,
+                { flex: 1, textAlignVertical: "center" },
+              ]}
+            >
+              {item.project.name}
+            </Text>
+
+            <Text
+              style={
+                (styles.bold,
+                {
+                  backgroundColor: colors.primary,
+                  color: colors.invertedText,
+                  marginInline: 4,
+                  paddingInline: 10,
+                  paddingVertical: 8,
+                  borderRadius: 25,
+                  textAlign: "center",
+                  fontWeight: 600,
+                })
+              }
+            >
+              {item.role.replace("_", " ")}
+            </Text>
           </View>
 
-          <View style={styles.metaRow}>
+          <View
+            style={[
+              styles.metaRow,
+              {
+                alignItems: "center",
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.metaText,
+                {
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  alignItems: "center",
+                },
+              ]}
+            >
+              <Text>
+                Created by:
+                <Text style={styles.bold}>
+                  {" "}
+                  @{item.project.createdBy.username}
+                </Text>
+              </Text>
+            </View>
             <Text style={styles.metaText}>
-              Created by: @
-              <Text style={styles.bold}>{item.createdBy.username}</Text>
-            </Text>
-            <Text style={styles.metaText}>
-              {new Date(item.createdAt).toDateString()}
+              {new Date(item.project.createdAt).toDateString()}
             </Text>
           </View>
 
@@ -118,12 +173,13 @@ export default function ProjectsListScreen() {
                   alignItems: "center",
                   padding: 8,
                 }}
-                onPress={() =>
+                onPress={() => {
+                  setRole(item.role);
                   router.push({
                     pathname: "/editProject",
                     params: { members: false.toString() },
-                  })
-                }
+                  });
+                }}
               >
                 <Ionicons name="create-outline" size={18} color={colors.text} />
                 <Text style={{ color: colors.text, marginLeft: 10 }}>
@@ -139,6 +195,7 @@ export default function ProjectsListScreen() {
                   padding: 8,
                 }}
                 onPress={() => {
+                  setRole(item.role);
                   router.push({
                     pathname: "/editProject",
                     params: { members: true.toString() },
@@ -147,7 +204,10 @@ export default function ProjectsListScreen() {
               >
                 <Ionicons name="people-outline" size={18} color={colors.text} />
                 <Text style={{ color: colors.text, marginLeft: 10 }}>
-                  Manage Members
+                  {item.role === USER_ROLES.PROJECT_ADMIN ||
+                  item.role === USER_ROLES.ADMIN
+                    ? "Manage Members"
+                    : "Project Members"}
                 </Text>
               </TouchableOpacity>
 
@@ -216,7 +276,7 @@ export default function ProjectsListScreen() {
       ) : (
         <FlatList
           data={projects}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item.project._id}
           renderItem={renderItem}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}

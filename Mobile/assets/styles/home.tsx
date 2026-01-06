@@ -41,10 +41,9 @@ export const createHomeStyles = (colors: ColorScheme) => {
     },
 
     projectName: {
-      fontSize: 18,
-      fontWeight: "700",
+      fontSize: 19,
+      fontWeight: 400,
       color: colors.text,
-      marginBottom: 10,
     },
 
     metaRow: {
@@ -58,7 +57,7 @@ export const createHomeStyles = (colors: ColorScheme) => {
     },
 
     bold: {
-      fontWeight: "600",
+      fontWeight: "700",
       color: colors.text,
     },
 

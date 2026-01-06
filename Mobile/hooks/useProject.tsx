@@ -1,3 +1,4 @@
+import { USER_ROLES } from "@/lib/constants";
 import {
   createContext,
   useContext,
@@ -11,17 +12,20 @@ import {
 type ProjectContextType = {
   project: {} | null;
   setProject: () => Dispatch<SetStateAction<boolean>>;
+  role: string;
+  setRole: () => Dispatch<SetStateAction<boolean>>;
 };
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 export function ProjectProvider({ children }: { children: ReactNode }) {
   const [project, setProject] = useState<{} | null>(null);
+  const [role, setRole] = useState<string>(USER_ROLES.MEMBER);
 
   useEffect(() => {}, []);
 
   return (
-    <ProjectContext.Provider value={{ project, setProject }}>
+    <ProjectContext.Provider value={{ project, setProject, role, setRole }}>
       {children}
     </ProjectContext.Provider>
   );
