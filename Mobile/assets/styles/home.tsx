@@ -42,7 +42,7 @@ export const createHomeStyles = (colors: ColorScheme) => {
 
     projectName: {
       fontSize: 19,
-      fontWeight: 400,
+      fontWeight: 700,
       color: colors.text,
     },
 

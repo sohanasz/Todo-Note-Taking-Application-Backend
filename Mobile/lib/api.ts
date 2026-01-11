@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { getItemAsync, setItemAsync, deleteItemAsync } from "expo-secure-store";
 import { Alert, Platform } from "react-native";
 
-const baseURL = "10.141.174.176:8000";
+const baseURL = "172.16.136.252:8000";
 
 export const api = axios.create({
   baseURL: `http://${baseURL}/api/v1`,
@@ -13,6 +13,7 @@ export const api = axios.create({
 export function initiateInterceptors({ setIsSignedInState }) {
   api.interceptors.request.use(async (config) => {
     let token: string;
+    console.log("INTERCEPTOR TOKEN", token, config);
     if (Platform.OS !== "web") {
       token = await getItemAsync("token");
     } else {

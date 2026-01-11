@@ -11,6 +11,8 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
+    console.log("TOKEN", token);
+
     throw new ApiError(401, "Unauthorized Request");
   }
 
@@ -25,8 +27,6 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.log("MIDDLEWARE", error);
-
     return res.status(401).json(new ApiResponse(401, {}, "Session Ended"));
   }
 });

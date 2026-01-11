@@ -8,7 +8,7 @@ type AuthResponse = {
 };
 
 async function setLocalData(data, saveToken = true) {
-  console.log("LOCAL DATA", data, saveToken);
+  console.log("LOCAL DATA", data);
 
   if (Platform.OS !== "web") {
     if (saveToken) {
@@ -21,7 +21,9 @@ async function setLocalData(data, saveToken = true) {
     await setItemAsync("avatar", data.avatar.url);
     await setItemAsync("isEmailVerified", data.isEmailVerified.toString());
   } else {
-    localStorage.setItem("token", data.token);
+    if (saveToken) {
+      localStorage.setItem("token", data.token);
+    }
     localStorage.setItem("userId", data._id);
     localStorage.setItem("username", data.username);
     localStorage.setItem("name", data.fullname);
@@ -76,9 +78,12 @@ export async function useAuth({ setIsSignedInState }) {
   if (Platform.OS !== "web") {
     token = await getItemAsync("token");
   } else {
+    console.log("Test Token", localStorage.getItem("token"));
+
     token = localStorage.getItem("token");
   }
 
+  console.log("AUTH CHECK 0.1", token);
   if (token) {
     const res = await api.get("/login/user");
 

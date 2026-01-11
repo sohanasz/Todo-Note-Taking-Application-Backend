@@ -1,10 +1,11 @@
 import { View, Text, Image, Switch, Platform } from "react-native";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useTheme from "@/hooks/useTheme";
 import { createProfileStyles } from "@/assets/styles/profile";
 import { Ionicons } from "@expo/vector-icons";
 import SafeScreen from "@/components/SafeScreen";
 import { getItemAsync } from "expo-secure-store";
+import { useFocusEffect } from "expo-router";
 
 const Profile = () => {
   const { isDark, setIsDark, colors } = useTheme();
@@ -12,22 +13,25 @@ const Profile = () => {
 
   const [userData, setUserData] = useState(null);
 
-  useEffect(() => {
-    async function getUserDataFromLocalStorage() {
-      const userData = { name: "", username: "" };
-      if (Platform.OS !== "web") {
-        userData.username = await getItemAsync("username");
-        userData.name = await getItemAsync("name");
-        setUserData(userData);
+  useFocusEffect(
+    useCallback(() => {
+      async function getUserDataFromLocalStorage() {
+        const userData = { name: "", username: "" };
 
-        return;
+        if (Platform.OS !== "web") {
+          userData.username = await getItemAsync("username");
+          userData.name = await getItemAsync("name");
+          setUserData(userData);
+        } else {
+          userData.username = localStorage.getItem("username");
+          userData.name = localStorage.getItem("name");
+          setUserData(userData);
+        }
       }
-      userData.username = localStorage.getItem("username");
-      userData.name = localStorage.getItem("name");
-    }
 
-    getUserDataFromLocalStorage();
-  }, []);
+      getUserDataFromLocalStorage();
+    }, [])
+  );
 
   if (!userData) {
     return (

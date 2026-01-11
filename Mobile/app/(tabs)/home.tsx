@@ -43,8 +43,10 @@ export default function ProjectsListScreen() {
   useFocusEffect(
     useCallback(() => {
       const fetchProjects = async () => {
+        console.log("LOAD 1");
         try {
           const res = await api.get("/projects");
+          console.log("LOAD 2", res);
 
           setProjects(res.data.data);
         } catch (err) {
@@ -56,6 +58,7 @@ export default function ProjectsListScreen() {
       fetchProjects();
     }, [showCreateProject])
   );
+  console.log("PROJECTS", projects);
 
   const renderItem = ({ item }: { item: Project }) => {
     const selected = project?._id === item.project._id;
@@ -72,7 +75,6 @@ export default function ProjectsListScreen() {
           style={styles.card}
           onPress={() => {
             setProject(item.project);
-
             setRole(item.role);
             setNotes(null);
           }}
@@ -104,19 +106,15 @@ export default function ProjectsListScreen() {
             </Text>
 
             <Text
-              style={
-                (styles.bold,
-                {
-                  backgroundColor: colors.primary,
-                  color: colors.invertedText,
-                  marginInline: 4,
-                  paddingInline: 10,
-                  paddingVertical: 8,
-                  borderRadius: 25,
-                  textAlign: "center",
-                  fontWeight: 600,
-                })
-              }
+              style={{
+                backgroundColor: colors.primary,
+                color: colors.invertedText,
+                paddingInline: 22,
+                paddingVertical: 8,
+                borderRadius: 25,
+                textAlign: "center",
+                fontWeight: 400,
+              }}
             >
               {item.role.replace("_", " ")}
             </Text>
@@ -140,9 +138,9 @@ export default function ProjectsListScreen() {
                 },
               ]}
             >
-              <Text>
+              <Text style={{ color: colors.text }}>
                 Created by:
-                <Text style={styles.bold}>
+                <Text style={[styles.bold]}>
                   {" "}
                   @{item.project.createdBy.username}
                 </Text>
