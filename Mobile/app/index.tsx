@@ -6,10 +6,11 @@ import { router } from "expo-router";
 import { initiateInterceptors } from "@/lib/api";
 import useTheme from "@/hooks/useTheme";
 import { useAuth } from "@/lib/auth";
+import { useAuthContext } from "@/hooks/useAuth";
 
 export default function Index() {
+  const { isSignedInState, setIsSignedInState } = useAuthContext();
   const [signInScreen, setSignInScreen] = useState<boolean>(true);
-  const [isSignedInState, setIsSignedInState] = useState<boolean>(false);
   const [signingIn, setSigningIn] = useState(true);
 
   const { colors } = useTheme();
@@ -19,7 +20,6 @@ export default function Index() {
 
     const verifyAuth = async () => {
       if (await useAuth({ setIsSignedInState })) {
-        console.log("CHECK AUTH 1");
         router.replace("/(tabs)/home");
       } else {
         setSigningIn(false);

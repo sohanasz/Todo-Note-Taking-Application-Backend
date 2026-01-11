@@ -8,8 +8,6 @@ type AuthResponse = {
 };
 
 async function setLocalData(data, saveToken = true) {
-  console.log("LOCAL DATA", data);
-
   if (Platform.OS !== "web") {
     if (saveToken) {
       await setItemAsync("token", data.token);
@@ -78,12 +76,9 @@ export async function useAuth({ setIsSignedInState }) {
   if (Platform.OS !== "web") {
     token = await getItemAsync("token");
   } else {
-    console.log("Test Token", localStorage.getItem("token"));
-
     token = localStorage.getItem("token");
   }
 
-  console.log("AUTH CHECK 0.1", token);
   if (token) {
     const res = await api.get("/login/user");
 
