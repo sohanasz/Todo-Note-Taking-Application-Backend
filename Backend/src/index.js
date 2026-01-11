@@ -35,10 +35,6 @@ app.use("/api/v1/", projectRoutes);
 app.use("/api/v1/", noteRoutes);
 app.use("/api/v1/", taskRoutes);
 
-// app.listen(PORT, () => {
-//   console.log(`Yo the server is up and running over port: ${PORT}`);
-// });
-
 // Starting Server Only When DB Is Connected
 connectDB()
   .then(() => {

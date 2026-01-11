@@ -14,7 +14,6 @@ const sendEmail = async (options) => {
       link: "https://taskmanager.app",
     },
   });
-  console.log("sendEmail() -> mailGenerator Variable -> ", mailGenerator);
 
   // For more info on how mailgen content work visit https://github.com/eladnava/mailgen#readme
   // Generate the plaintext version of the e-mail (for clients that do not support HTML)

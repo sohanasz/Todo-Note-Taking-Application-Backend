@@ -38,7 +38,6 @@ export default function SignInScreen({ setSignInScreen }: any) {
         Alert.alert("Login error", "Some error occurred, try again!");
       }
     } catch (err: any) {
-      console.log(err);
       Alert.alert(
         "Login failed",
         err?.response?.data?.message ?? "Something went wrong"

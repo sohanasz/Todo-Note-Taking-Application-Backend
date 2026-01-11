@@ -39,7 +39,6 @@ export default function SignUpScreen({ setSignInScreen }: any) {
         email,
         password
       );
-      console.log("RESSS", res);
 
       if (res.statusCode === 201) {
         router.replace("/(tabs)/home");

@@ -508,8 +508,6 @@ const TextEditor = ({
                   setIsSaving(true);
                   await onSave();
                 } catch (error) {
-                  console.log(error);
-
                   if (setOnSaveError) {
                     setOnSaveError(error);
                   }

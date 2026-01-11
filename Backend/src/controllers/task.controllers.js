@@ -12,7 +12,6 @@ const createTask = asyncHandler(async (req, res) => {
   if (!title || !description || !projectId || !assignedTo || !attachments) {
     throw new ApiError(400, "All fields are required!");
   }
-  console.log(attachments);
 
   const task = await Task.create({
     title,

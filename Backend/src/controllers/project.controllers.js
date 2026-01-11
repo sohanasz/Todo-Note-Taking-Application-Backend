@@ -60,8 +60,6 @@ const getProjects = asyncHandler(async (req, res) => {
       },
     });
 
-    console.log("MEMS", projectMemberships);
-
     const projects = projectMemberships.map((proMem) => {
       return { project: proMem.project, role: proMem.role };
     });
@@ -69,9 +67,7 @@ const getProjects = asyncHandler(async (req, res) => {
     return res
       .status(200)
       .json(new ApiResponse(200, projects, "Projects fetched"));
-  } catch (error) {
-    console.log("Catch Projects", error);
-  }
+  } catch (error) {}
 });
 
 const getProjectById = asyncHandler(async (req, res) => {
@@ -165,7 +161,6 @@ const addMemberToProject = asyncHandler(async (req, res) => {
     const userId = req.user._id;
     const { projectId } = req.params;
     const { usernameToAdd, role } = req.body;
-    console.log("CHECK", userId, projectId, usernameToAdd, role);
 
     if (!userId || !projectId || !usernameToAdd || !role) {
       throw new ApiError(401, "Invalid Operation");
@@ -212,13 +207,11 @@ const addMemberToProject = asyncHandler(async (req, res) => {
       project: projectId,
       role: role || UserRolesEnum.MEMBER,
     });
-    console.log("USER INFO", userToAdd, "NEW MEMBER", newMember);
 
     return res
       .status(201)
       .json(new ApiResponse(201, newMember, "Member added successfully"));
   } catch (error) {
-    console.log("PROJECT MEMBER", error.message);
     return res
       .status(error.statusCode)
       .json(new ApiResponse(error.statusCode, {}, error.message));

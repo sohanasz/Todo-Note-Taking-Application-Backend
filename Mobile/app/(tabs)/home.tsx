@@ -43,10 +43,8 @@ export default function ProjectsListScreen() {
   useFocusEffect(
     useCallback(() => {
       const fetchProjects = async () => {
-        console.log("LOAD 1");
         try {
           const res = await api.get("/projects");
-          console.log("LOAD 2", res);
 
           setProjects(res.data.data);
         } catch (err) {
@@ -58,7 +56,6 @@ export default function ProjectsListScreen() {
       fetchProjects();
     }, [showCreateProject])
   );
-  console.log("PROJECTS", projects);
 
   const renderItem = ({ item }: { item: Project }) => {
     const selected = project?._id === item.project._id;
