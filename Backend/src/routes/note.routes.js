@@ -17,18 +17,47 @@ router.use(verifyJWT);
 router
   .route("/projects/:projectId/notes")
   .get(
-    validateProjectPermission([UserRolesEnum.ADMIN, UserRolesEnum.MEMBER]),
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+      UserRolesEnum.MEMBER,
+    ]),
     getNotes,
   )
-  .post(validateProjectPermission([UserRolesEnum.ADMIN]), createNote);
+  .post(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+      UserRolesEnum.MEMBER,
+    ]),
+    createNote,
+  );
 
 router
   .route("/projects/:projectId/notes/:noteId")
   .get(
-    validateProjectPermission([UserRolesEnum.ADMIN, UserRolesEnum.MEMBER]),
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+      UserRolesEnum.MEMBER,
+    ]),
     getNoteById,
   )
-  .put(validateProjectPermission([UserRolesEnum.ADMIN]), updateNote)
-  .delete(validateProjectPermission([UserRolesEnum.ADMIN]), deleteNote);
+  .put(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+      UserRolesEnum.MEMBER,
+    ]),
+    updateNote,
+  )
+  .delete(
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+      UserRolesEnum.MEMBER,
+    ]),
+    deleteNote,
+  );
 
 export default router;

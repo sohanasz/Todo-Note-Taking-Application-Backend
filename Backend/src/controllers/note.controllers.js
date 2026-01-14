@@ -33,16 +33,15 @@ const createNote = asyncHandler(async (req, res) => {
 
 const getNotes = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
-  const project = await Project.findById(
-    new mongoose.Types.ObjectId(projectId),
-  );
+  const typedProjectId = new mongoose.Types.ObjectId(projectId);
+  const project = await Project.findById(typedProjectId);
 
   if (!project) {
     throw new ApiError(401, "No project found");
   }
 
   const notes = await ProjectNote.find({
-    project: new mongoose.Types.ObjectId(projectId),
+    project: typedProjectId,
   }).populate({
     path: "createdBy",
     select: "_id username",
