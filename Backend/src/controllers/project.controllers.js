@@ -230,7 +230,11 @@ const deleteMember = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Only admins can remove members");
   }
 
-  await ProjectMember.findOneAndDelete({ user: memberId, project: projectId });
+  const membership = await ProjectMember.findOneAndUpdate(
+    { user: memberId, project: projectId },
+    { status: ProjectStatusEnum.REMOVED },
+    { new: true },
+  );
 
   return res
     .status(200)
