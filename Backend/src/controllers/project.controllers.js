@@ -237,7 +237,7 @@ const deleteMember = asyncHandler(async (req, res) => {
   }
 
   const membership = await ProjectMember.findOneAndUpdate(
-    { user: memberId, project: projectId },
+    { user: memberId, project: projectId, status: ProjectStatusEnum.ACTIVE },
     { status: ProjectStatusEnum.REMOVED },
     { new: true },
   );
@@ -262,7 +262,7 @@ const updateMemberRole = asyncHandler(async (req, res) => {
   }
 
   const updatedMember = await ProjectMember.findOneAndUpdate(
-    { user: memberId, project: projectId },
+    { user: memberId, project: projectId, status: ProjectStatusEnum.ACTIVE },
     { role },
     { new: true },
   );
