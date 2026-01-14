@@ -51,6 +51,7 @@ const getProjects = asyncHandler(async (req, res) => {
 
     const projectMemberships = await ProjectMember.find({
       user: userId,
+      status: ProjectStatusEnum.ACTIVE,
     }).populate({
       path: "project",
       populate: {
@@ -67,7 +68,13 @@ const getProjects = asyncHandler(async (req, res) => {
     return res
       .status(200)
       .json(new ApiResponse(200, projects, "Projects fetched"));
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({
+      status: 500,
+      data: {},
+      message: "Error fetching projects",
+    });
+  }
 });
 
 const getProjectById = asyncHandler(async (req, res) => {
