@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { ProjectNote } from "../models/note.models.js";
 import { Project } from "../models/project.models.js";
 import { ProjectMember } from "../models/projectmember.models.js";
-import { UserRolesEnum } from "../utils/constants.js";
+import { ProjectStatusEnum, UserRolesEnum } from "../utils/constants.js";
 import { User } from "../models/user.models.js";
 
 const createProject = asyncHandler(async (req, res) => {
@@ -195,18 +195,24 @@ const addMemberToProject = asyncHandler(async (req, res) => {
       project: projectId,
     });
 
-    if (existing) {
+    if (existing && existing.status === ProjectStatusEnum.ACTIVE) {
       throw new ApiError(
         400,
         `User is already a member of the project: ${usernameToAdd}`,
       );
     }
 
-    const newMember = await ProjectMember.create({
-      user: new mongoose.Types.ObjectId(userToAdd._id),
-      project: projectId,
-      role: role || UserRolesEnum.MEMBER,
-    });
+    let newMember = null;
+    if (!existing) {
+      newMember = await ProjectMember.create({
+        user: new mongoose.Types.ObjectId(userToAdd._id),
+        project: projectId,
+        role: role || UserRolesEnum.MEMBER,
+      });
+    } else if (existing.status === ProjectStatusEnum.REMOVED) {
+      existing.status = ProjectStatusEnum.ACTIVE;
+      newMember = await existing.save();
+    }
 
     return res
       .status(201)
